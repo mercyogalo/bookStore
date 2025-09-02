@@ -2,7 +2,7 @@ const mongoose=require("mongoose");
 const bcrypt=require("bcryptjs");
 
 
-const reviewerSchema=new mongoose.Schema({
+const userSchema=new mongoose.Schema({
     name:{
         type:String,
         required:true
@@ -15,11 +15,16 @@ const reviewerSchema=new mongoose.Schema({
     password:{
         type:String,
         required:true
+    },
+    role:{
+        type:String,
+        enum:["reviewer", "author", "admin"],
+        default:"reviewer"
     }
 
 }, {timestamps:true})
 
-reviewerSchema.pre("save", async function(next){
+userSchema.pre("save", async function(next){
     if(!this.isModified("password")) return next();
 
     const salt=await bcrypt.genSalt(10);
@@ -27,12 +32,12 @@ reviewerSchema.pre("save", async function(next){
     next();
 })
 
-reviewerSchema.methods.matchPassword=async function(enteredPassword){
+userSchema.methods.matchPassword=async function(enteredPassword){
     return await bcrypt.compare(enteredPassword, this.password);
 }
 
-const Reviewer=mongoose.model('Reviewer', reviewerSchema);
-module.exports=Reviewer;
+const User=mongoose.model('User', userSchema);
+module.exports=User;
 
 
 

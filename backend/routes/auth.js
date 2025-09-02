@@ -1,28 +1,30 @@
 const express = require("express");
-const Reviewer = require("../models/User");
+const User = require("../models/User");
 const router = express.Router();
 const generateToken = require("../Utils/token");
+const protect=require('../middlewares/auth');
 
 
 router.post("/register", async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, role,  password } = req.body;
   try {
-    if (!name || !password || !email) {
+    if (!name || !password || !email || !role ) {
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
-    const userExists = await Reviewer.findOne({ email });
+    const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({ message: "This user already exists" });
     }
 
-    const reviewer = await Reviewer.create({ name, email, password });
-    const token = generateToken(reviewer._id);
+    const user = await User.create({ name, email, role, password });
+    const token = generateToken(User._id);
 
     res.status(201).json({
-      userID: reviewer._id,
-      username: reviewer.name,
-      email: reviewer.email,
+      userID: user._id,
+      username: user.name,
+      email: user.email,
+      role:user.role,
       token,
     });
   } catch (error) {
@@ -40,17 +42,17 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
-    const reviewer = await Reviewer.findOne({ email });
-    if (!reviewer || !(await reviewer.matchPassword(password))) {
+    const user = await User.findOne({ email });
+    if (!user || !(await User.matchPassword(password))) {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken(reviewer._id);
+    const token = generateToken(user._id);
 
     res.status(200).json({
-      userID: reviewer._id,
-      username: reviewer.name,
-      email: reviewer.email,
+      userID: user._id,
+      username: user.name,
+      email: user.email,
       token,
     });
   } catch (error) {
@@ -58,5 +60,24 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ message: "Server error in login" });
   }
 });
+
+//user profile
+router.get('/profile', protect, async (req,res)=>{
+  try {
+    if(!req.user){
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json({
+      userID: req.user._id,
+      username: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+      createdAt: req.user.createdAt,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({message:"Server error in profile fetch"})
+  }
+})
 
 module.exports = router;

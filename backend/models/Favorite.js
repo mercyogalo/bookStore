@@ -1,11 +1,11 @@
 const mongoose=require("mongoose");
-const Reviewer=require("./User");
+const User=require("./User");
 
 
 const favoriteSchema=new mongoose.Schema({
-    reviewer:{
+    User:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"Reviewer",
+        ref:"User",
         required:true
     },
     book:{

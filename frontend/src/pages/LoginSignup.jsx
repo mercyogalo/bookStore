@@ -26,6 +26,7 @@ export const LoginSignup = ({ onClose }) => {
     name: '',
     email: '',
     password: '',
+    role:'',
     confirmPassword: ''
   });
 
@@ -157,6 +158,20 @@ export const LoginSignup = ({ onClose }) => {
                     required
                   />
                 </div>
+                 <div className="space-y-2">
+                  <Label htmlFor="signup-role">Role</Label>
+                <select
+                  name="role"
+                  value={signupForm.role}
+                  onChange={(e) => setSignupForm(prev => ({ ...prev, role: e.target.value }))}
+                  className="w-full px-4 py-2 border rounded"
+                >
+                  <option value="reviewer">Reviewer</option>
+                  <option value="author">Author</option>
+                </select>
+                
+                </div>
+                
                 <div className="space-y-2">
                   <Label htmlFor="signup-password">Password</Label>
                   <Input

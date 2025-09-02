@@ -1,15 +1,17 @@
 const mongoose=require("mongoose");
+const User=require("./User");
 
 const bookSchema=new mongoose.Schema({
     title:{
         type:String,
-        required:true
+        required:true,
+        trim:true
     },
     author:{
         type:String,
         required:true
     },
-    year:{
+    yearPublished:{
         type:Number,
         required:true
     },
@@ -25,5 +27,18 @@ const bookSchema=new mongoose.Schema({
         type:String,
         default: "default-book.png"
     },
+    genre:{
+        type:String
+    },
+    createdBy:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },
+    createdAt:{
+        type:Date,
+        default:Date.now
+    },
+
+    
     
 })

@@ -18,7 +18,7 @@ router.post("/register", async (req, res) => {
     }
 
     const user = await User.create({ name, email, role, password });
-    const token = generateToken(User._id);
+    const token = generateToken(user._id);
 
     res.status(201).json({
       userID: user._id,
@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
 });
 
 //user profile
-router.get('/profile', protect, async (req,res)=>{
+router.get('/profile:id', protect, async (req,res)=>{
   try {
     if(!req.user){
       return res.status(404).json({ message: "User not found" });

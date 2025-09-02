@@ -13,7 +13,7 @@ const bookSchema=new mongoose.Schema({
     },
     yearPublished:{
         type:Number,
-        required:true
+        default:2027
     },
     link:{
         type:String,
@@ -32,7 +32,8 @@ const bookSchema=new mongoose.Schema({
     },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
-        ref:"User"
+        ref:"User",
+        required:true
     },
     createdAt:{
         type:Date,

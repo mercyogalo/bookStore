@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Star, Share2, Flag, Users, Calendar, Tag } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
@@ -8,29 +9,47 @@ import { LikeButton } from '../components/LikeButton';
 import { FavoriteButton } from '../components/FavoriteButton';
 import { ReviewForm } from '../components/ReviewForm';
 import { ReviewCard } from '../components/ReviewCard';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogTitle, AlertDialogDescription } from '../components/ui/alert-dialog';
+import { useToast } from '../hooks/use-toast';
 
 export const BookPage = ({ book, onBack }) => {
   const [reviews, setReviews] = useState([]);
   const [sortBy, setSortBy] = useState('newest');
+  const [books, setBooks] = useState([]);
+  const [userRole, setUserRole] = useState(''); // 'admin' or 'author' or ''
+  const [userName, setUserName] = useState(''); // current user's name
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Mock reviews data
-    const mockReviews = Array.from({ length: 8 }, (_, i) => ({
-      id: i + 1,
-      userId: `user-${i + 1}`,
-      userName: `Reader ${i + 1}`,
-      userAvatar: null,
-      content: `This book was ${['amazing', 'incredible', 'thought-provoking', 'engaging', 'wonderful'][Math.floor(Math.random() * 5)]}! ${['The characters were well-developed', 'The plot kept me hooked', 'The writing style was beautiful', 'I couldn\'t put it down', 'Highly recommend this read'][Math.floor(Math.random() * 5)]}.`,
-      rating: Math.floor(Math.random() * 2) + 4, // 4-5 stars
-      likes: Math.floor(Math.random() * 20) + 1,
-      isLiked: false,
-      createdAt: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
-      isEdited: Math.random() > 0.7,
-      isPinned: i < 2 && Math.random() > 0.5
-    }));
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch(`http://localhost:5000/api/books/${book.id}/reviews`);
+        const data = await response.json();
+        setReviews(data);
+      } catch (error) {
+        console.error('Error fetching reviews:', error);
+      }
+    };
 
-    setReviews(mockReviews);
-  }, [book.id]);
+    if (book?.id) {
+      fetchReviews();
+    }
+  }, [book?.id]);
+
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/books');
+        const data = await response.json();
+        setBooks(data);
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
+
+    fetchBooks();
+  }, []);
 
   const handleSubmitReview = (reviewData) => {
     const newReview = {
@@ -72,6 +91,28 @@ export const BookPage = ({ book, onBack }) => {
           }
         : review
     ));
+  };
+
+  const handleDeleteBook = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:5000/api/books/deleteBook/${book.id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        toast({ title: 'Book deleted successfully!', status: 'success' });
+        navigate('/books');
+      } else {
+        const errorData = await response.json();
+        toast({ title: errorData.message || 'Failed to delete book', status: 'error' });
+      }
+    } catch (error) {
+      toast({ title: 'An error occurred', status: 'error' });
+    }
   };
 
   const sortedReviews = [...reviews].sort((a, b) => {
@@ -237,6 +278,60 @@ export const BookPage = ({ book, onBack }) => {
           </Card>
         </div>
       </div>
+
+      {/* Books Grid */}
+      <div className="container mx-auto p-6 space-y-6">
+        <h1 className="text-3xl font-bold text-center">Books</h1>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {books.map((book) => (
+            <Card key={book.id} className="shadow-md">
+              <CardHeader>
+                <div className="aspect-[3/4] rounded-lg overflow-hidden bg-muted">
+                  <img
+                    src={book.coverImage || `https://via.placeholder.com/150`}
+                    alt={book.title}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <CardTitle className="text-lg font-semibold">{book.title}</CardTitle>
+                <p className="text-sm text-muted-foreground">by {book.author}</p>
+                <p className="text-sm text-muted-foreground">Genre: {book.genre}</p>
+                <p className="text-sm text-muted-foreground">Published: {book.yearPublished}</p>
+                <Button
+                  variant="outline"
+                  onClick={() => navigate(`/books/${book.id}`)}
+                  className="w-full"
+                >
+                  View Details
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+
+      {/* Delete Book Button (Visible to authors and admins) */}
+      {(userRole === 'admin' || (userRole === 'author' && userName === book.author)) && (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">Delete Book</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to delete this book? This action cannot be undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <Button variant="outline">Cancel</Button>
+              <Button variant="destructive" onClick={handleDeleteBook}>Delete</Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
     </div>
   );
 };

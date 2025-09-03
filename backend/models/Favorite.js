@@ -1,5 +1,6 @@
 const mongoose=require("mongoose");
 const User=require("./User");
+const Book=require("./Books");
 
 
 const favoriteSchema=new mongoose.Schema({
@@ -19,5 +20,14 @@ const favoriteSchema=new mongoose.Schema({
     }
 })
 
+favoriteSchema.index(
+    {
+        user:1,
+        book:1
+    },
+    {
+        unique:true
+    }
+)
 
 const Favorite=("Favorite", favoriteSchema)

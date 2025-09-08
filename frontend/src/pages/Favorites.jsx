@@ -13,6 +13,13 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   const { user } = useAuth();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login';
+    }
+  }, []);
+
+  useEffect(() => {
     // Mock favorites data
     const mockFavorites = Array.from({ length: 6 }, (_, i) => ({
       id: `fav-${i + 1}`,
@@ -60,6 +67,26 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
 
     setFilteredFavorites(filtered);
   }, [favorites, sortBy, filterBy]);
+
+  const fetchFavorites = async () => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch('http://localhost:5000/api/favorites', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+        return;
+      }
+
+      const data = await response.json();
+      setFavorites(data);
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+    }
+  };
 
   const categories = ['all', ...new Set(favorites.map(book => book.category.toLowerCase()))];
 

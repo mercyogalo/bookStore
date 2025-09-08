@@ -38,6 +38,13 @@ const UpdateBookPage = () => {
     fetchBookDetails();
   }, [id]);
 
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -56,6 +63,12 @@ const UpdateBookPage = () => {
         },
         body: JSON.stringify(formData),
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
 
       if (response.ok) {
         toast({ title: "Book updated successfully!", status: "success" });

@@ -2,7 +2,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { Book, Heart, Home, TrendingUp, User, LogIn, Menu } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
-import { useAuth } from '../context/AuthContext';
 import {
   Sheet,
   SheetContent,
@@ -11,7 +10,6 @@ import {
 import { useState } from 'react';
 
 export function Navbar() {
-  const { user, logout } = useAuth();
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -27,14 +25,14 @@ export function Navbar() {
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = location.pathname === item.path;
-        
+
         return (
           <Link
             key={item.name}
             to={item.path}
             className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
-              isActive 
-                ? 'bg-primary text-primary-foreground' 
+              isActive
+                ? 'bg-primary text-primary-foreground'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted'
             } ${mobile ? 'w-full' : ''}`}
             onClick={() => mobile && setIsOpen(false)}
@@ -95,23 +93,12 @@ export function Navbar() {
           </div>
           <nav className="flex items-center space-x-2">
             <ThemeToggle />
-            {user ? (
-              <div className="flex items-center space-x-2">
-                <span className="hidden text-sm text-muted-foreground md:inline-block">
-                  {user.name}
-                </span>
-                <Button variant="outline" size="sm" onClick={logout}>
-                  Logout
-                </Button>
-              </div>
-            ) : (
-              <Link to="/login">
-                <Button variant="outline" size="sm">
-                  <LogIn className="h-4 w-4 mr-2" />
-                  Login
-                </Button>
-              </Link>
-            )}
+            <Link to="/login">
+              <Button variant="outline" size="sm">
+                <LogIn className="h-4 w-4 mr-2" />
+                Login
+              </Button>
+            </Link>
           </nav>
         </div>
       </div>

@@ -37,7 +37,6 @@ export const LoginSignup = ({ onClose }) => {
 
     try {
       const res = await axios.post(`${api}/auth/login`, loginForm);
-      console.log(res);
       const token = res.data.token;
       localStorage.setItem('authToken', token);
 
@@ -65,7 +64,6 @@ export const LoginSignup = ({ onClose }) => {
 
     try {
       const res = await axios.post(`${api}/auth/register`, signupForm);
-       console.log(res);
       const token = res.data.token;
       localStorage.setItem('authToken', token);
 

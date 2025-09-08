@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Form, Input, Textarea, Button } from "../components/ui";
 import { useToast } from "../hooks/use-toast";
 import { useNavigate } from "react-router-dom";
@@ -14,6 +14,13 @@ const CreateBookPage = () => {
   });
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -34,6 +41,12 @@ const CreateBookPage = () => {
         },
         body: JSON.stringify({ ...formData, author }),
       });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
 
       if (response.ok) {
         toast({ title: "Book created successfully!", status: "success" });

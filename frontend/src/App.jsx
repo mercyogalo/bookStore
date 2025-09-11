@@ -9,6 +9,7 @@ import { LoginSignup } from "./pages/LoginSignup"
 import { ThemeProvider } from "./context/ThemeContext"
 import { AuthProvider } from "./context/AuthContext"
 import { Toaster } from "./components/ui/toaster"
+import { AuthorDashboard } from "./components/AuthorDashboard"
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
             <main className="container mx-auto px-4 py-8">
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/authorDashboard" element={<AuthorDashboard />} />
                 <Route path="/popular" element={<Popular />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={<Profile />} />

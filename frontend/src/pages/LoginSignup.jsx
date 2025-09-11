@@ -39,8 +39,12 @@ export const LoginSignup = ({ onClose }) => {
       const res = await axios.post(`${api}/auth/login`, loginForm);
       const token = res.data.token;
       localStorage.setItem('authToken', token);
-
-      navigate('/');
+      if (res.data.role=="author"){
+        navigate('/authorDashboard');
+      }else{
+        navigate('/');
+      }
+      
       alert("Successfully logged in");
     } catch (error) {
       console.log("Login failed:", error);

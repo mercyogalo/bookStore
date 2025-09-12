@@ -1,45 +1,83 @@
-import { useState } from 'react';
-import { Upload, Plus, Eye, Edit3, BarChart3 } from 'lucide-react';
+import { useState } from 'react'; 
+import { Upload, Eye, BarChart3 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import api from '../Utils/Api';
 
 export const AuthorDashboard = ({ onUploadBook }) => {
   const [isUploading, setIsUploading] = useState(false);
   const [bookForm, setBookForm] = useState({
     title: '',
     description: '',
-    category: '',
+    genre: '',
     coverImage: '',
-    chapters: ''
+    chapters: '',
+    author:'',
+    yearPublished:'',
+    link:''
+    
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
     
-    // Simulate upload
+   
     setTimeout(() => {
       onUploadBook(bookForm);
       setBookForm({
         title: '',
         description: '',
-        category: '',
+        genre: '',
         coverImage: '',
-        chapters: ''
+        genre:'',
+        chapters: '',
+        author:'',
+       yearPublished:'',
+        link:''
       });
+
+
+
+      //try {
+     //   const res=await axios.post(`${api}/`)
+     // } catch (error) {
+        
+    //  }
+
+
+
+
+
+
       setIsUploading(false);
     }, 1000);
   };
+
+
+
+  try {
+    const books= axios.get()
+  } catch (error) {
+    
+  }
+
+
+
+
+
 
   const mockBooks = Array.from({ length: 3 }, (_, i) => ({
     id: i + 1,
     title: `My Book ${i + 1}`,
     description: 'An engaging story that captures the reader\'s imagination...',
-    category: 'Fiction',
+    genre: 'Fiction',
     rating: 4.2 + Math.random() * 0.8,
     reviewCount: Math.floor(Math.random() * 50) + 10,
     likes: Math.floor(Math.random() * 200) + 50,
@@ -96,15 +134,23 @@ export const AuthorDashboard = ({ onUploadBook }) => {
         </TabsList>
 
         <TabsContent value="upload">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Upload className="h-5 w-5" />
-                <span>Upload New Book</span>
-              </CardTitle>
-            </CardHeader>
+         
+          <Card className="w-full md:w-3/4 lg:w-3/4 mx-auto"> 
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-4">
+
+
+                 <div>
+                 <label className="text-sm font-medium">Author Name</label>
+                  <Input
+                    value={bookForm.author}
+                    onChange={(e) => setBookForm(prev => ({ ...prev, author: e.target.value }))}
+                    placeholder="Enter author name"
+                    required
+                  />
+                </div>
+                
+
                 <div>
                   <label className="text-sm font-medium">Book Title</label>
                   <Input
@@ -112,6 +158,47 @@ export const AuthorDashboard = ({ onUploadBook }) => {
                     onChange={(e) => setBookForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Enter book title"
                     required
+                  />
+                </div>
+
+               
+                  <div>
+                  <label className="text-sm font-medium">Genre</label>
+                  <Input
+                    value={bookForm.genre}
+                    onChange={(e) => setBookForm(prev => ({ ...prev, genre: e.target.value }))}
+                    placeholder="e.g., Fiction, Mystery, Romance"
+                    required
+                  />
+                </div>
+
+                 <div>
+                  <label className="text-sm font-medium">Book link</label>
+                  <Input
+                    value={bookForm.link}
+                    onChange={(e) => setBookForm(prev => ({ ...prev, link: e.target.value }))}
+                    placeholder="https://example.com/book.com"
+                    type="url"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-sm font-medium">Cover Image URL</label>
+                  <Input
+                    value={bookForm.coverImage}
+                    onChange={(e) => setBookForm(prev => ({ ...prev, coverImage: e.target.value }))}
+                    placeholder="https://example.com/cover.jpg"
+                    type="url"
+                  />
+                </div>
+                 
+
+                 <div>
+                 <label className="text-sm font-medium">Year of publication</label>
+                  <Input
+                    value={bookForm.yearPublished}
+                    onChange={(e) => setBookForm(prev => ({ ...prev, yearPublished: e.target.value }))}
+                    placeholder="Year of publishing"
                   />
                 </div>
 
@@ -126,25 +213,7 @@ export const AuthorDashboard = ({ onUploadBook }) => {
                   />
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium">Category</label>
-                  <Input
-                    value={bookForm.category}
-                    onChange={(e) => setBookForm(prev => ({ ...prev, category: e.target.value }))}
-                    placeholder="e.g., Fiction, Mystery, Romance"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="text-sm font-medium">Cover Image URL</label>
-                  <Input
-                    value={bookForm.coverImage}
-                    onChange={(e) => setBookForm(prev => ({ ...prev, coverImage: e.target.value }))}
-                    placeholder="https://example.com/cover.jpg"
-                    type="url"
-                  />
-                </div>
+                
 
                 <div>
                   <label className="text-sm font-medium">Sample Chapters</label>
@@ -164,6 +233,7 @@ export const AuthorDashboard = ({ onUploadBook }) => {
             </CardContent>
           </Card>
         </TabsContent>
+
 
         <TabsContent value="manage">
           <div className="space-y-4">
@@ -196,8 +266,9 @@ export const AuthorDashboard = ({ onUploadBook }) => {
                         View
                       </Button>
                       <Button variant="outline" size="sm">
-                        <Edit3 className="h-4 w-4 mr-2" />
-                        Edit
+                        <Link to={`/updatePage/${book.id}`} className="flex items-center">
+                          Edit
+                        </Link>
                       </Button>
                       <Button variant="outline" size="sm">
                         <BarChart3 className="h-4 w-4 mr-2" />
@@ -210,6 +281,7 @@ export const AuthorDashboard = ({ onUploadBook }) => {
             ))}
           </div>
         </TabsContent>
+
       </Tabs>
     </div>
   );

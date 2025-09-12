@@ -30,6 +30,9 @@ const bookSchema=new mongoose.Schema({
     genre:{
         type:String
     },
+    chapters:{
+        type:String
+    },
     createdBy:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",

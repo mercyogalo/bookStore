@@ -9,7 +9,9 @@ import { LoginSignup } from "./pages/LoginSignup"
 import { ThemeProvider } from "./context/ThemeContext"
 import { AuthProvider } from "./context/AuthContext"
 import { Toaster } from "./components/ui/toaster"
-import { AuthorDashboard } from "./components/AuthorDashboard"
+import { AuthorDashboard } from "./components/AuthorDashboard";
+import UpdateBookPage from './pages/UpdateBookPage';
+import CreateBookPage from "./pages/CreateBookPage";
 
 function App() {
   return (
@@ -18,7 +20,7 @@ function App() {
         <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen bg-background">
-            {/* Navbar will always show, except on auth page */}
+          
             <Navbar />
 
             <main className="container mx-auto px-4 py-8">
@@ -29,6 +31,8 @@ function App() {
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/book/:id" element={<BookPage />} />
+                 <Route path="/Createbook" element={<CreateBookPage />} />
+                  <Route path="/Updatebook/:id" element={<BookPage />} />
                 <Route path="/login" element={<LoginSignup />} />
               </Routes>
             </main>

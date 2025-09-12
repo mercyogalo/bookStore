@@ -4,6 +4,7 @@ const dotenv=require("dotenv");
 const mongoose=require("mongoose");
 const app=express();
 const authRoutes=require("./routes/auth");
+const bookRoutes=require("./routes/book");
 
 app.use(express.json());
 app.use(cors());
@@ -13,6 +14,7 @@ const PORT=process.env.PORT || 5000;
 
 
 app.use('/api/auth', authRoutes);
+app.use('/api/book', bookRoutes);
 
 
 

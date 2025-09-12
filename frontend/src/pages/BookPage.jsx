@@ -151,7 +151,7 @@ export const BookPage = ({ book, onBack }) => {
             <CardContent className="p-6">
               <div className="aspect-[3/4] rounded-lg overflow-hidden bg-muted mb-4">
                 <img
-                  src={book.coverImage || `https://images.pexels.com/photos/159866/books-book-pages-read-literature-159866.jpeg?auto=compress&cs=tinysrgb&w=400&h=600`}
+                  src={book.coverImage}
                   alt={book.title}
                   className="w-full h-full object-cover"
                 />

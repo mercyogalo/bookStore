@@ -1,6 +1,21 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+@reference "tailwindcss";
+
+@utility btn {
+  @apply px-4 py-2 rounded-md font-medium transition-colors;
+}
+
+@utility btn-primary {
+  @apply bg-primary text-primary-foreground hover:bg-primary/90;
+}
+
+@utility btn-secondary {
+  @apply bg-secondary text-secondary-foreground hover:bg-secondary/90;
+}
+
+@utility card {
+  @apply bg-card text-card-foreground shadow-md rounded-lg p-4;
+}
+
+@utility default-text {
+  @apply text-gray-400;
 }

@@ -1,49 +1,47 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
-import { Navbar } from "./components/Navbar"
-import { Home } from "./pages/Home"
-import { Popular } from "./pages/Popular"
-import { Favorites } from "./pages/Favorites"
-import { Profile } from "./pages/Profile"
-import { BookPage } from "./pages/BookPage"
-import { LoginSignup } from "./pages/LoginSignup"
-import { ThemeProvider } from "./context/ThemeContext"
-import { AuthProvider } from "./context/AuthContext"
-import { Toaster } from "./components/ui/toaster"
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Navbar } from "./components/Navbar";
+import { Home } from "./pages/Home";
+import { Popular } from "./pages/Popular";
+import { Favorites } from "./pages/Favorites";
+import { Profile } from "./pages/Profile";
+import { BookPage } from "./pages/BookPage";
+import { LoginSignup } from "./pages/LoginSignup";
+import { ThemeProvider } from "./context/ThemeContext";
+import { AuthProvider } from "./context/AuthContext";
+import { Toaster } from "./components/ui/toaster";
 import { AuthorDashboard } from "./components/AuthorDashboard";
-import UpdateBookPage from './pages/UpdateBookPage';
+import UpdateBookPage from "./pages/UpdateBookPage";
 import CreateBookPage from "./pages/CreateBookPage";
+
 
 function App() {
   return (
     <ThemeProvider>
-      
-        <BrowserRouter>
+      <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen bg-background">
-          
             <Navbar />
 
             <main className="container mx-auto px-4 py-8">
               <Routes>
                 <Route path="/" element={<Home />} />
-                <Route path="/authorDashboard" element={<AuthorDashboard />} />
+                <Route path="/author-dashboard" element={<AuthorDashboard />} />
                 <Route path="/popular" element={<Popular />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/book/:id" element={<BookPage />} />
-                 <Route path="/Createbook" element={<CreateBookPage />} />
-                  <Route path="/Updatebook/:id" element={<BookPage />} />
+                <Route path="/create-book" element={<CreateBookPage />} />
+                <Route path="/update-book/:id" element={<UpdateBookPage />} />
                 <Route path="/login" element={<LoginSignup />} />
               </Routes>
             </main>
 
             <Toaster />
           </div>
-          </AuthProvider>
-        </BrowserRouter>
-      
+        </AuthProvider>
+      </BrowserRouter>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

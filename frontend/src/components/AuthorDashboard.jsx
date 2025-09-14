@@ -36,7 +36,6 @@ export const AuthorDashboard = ({ onUploadBook }) => {
         description: '',
         genre: '',
         coverImage: '',
-        genre:'',
         chapters: '',
         author:'',
        yearPublished:'',

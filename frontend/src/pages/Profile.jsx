@@ -21,9 +21,7 @@ export const Profile = () => {
     const fetchProfile = async () => {
       try {
         const response = await fetch("http://localhost:5000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         if (response.status === 401) {
@@ -62,44 +60,56 @@ export const Profile = () => {
     );
   }
 
-  if (!profile) {
-    return null;
-  }
+  if (!profile) return null;
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-lg p-6 text-center">
-      
-        <div className="flex justify-center mb-6">
-          <Avatar
-            src={profile.avatar || "https://via.placeholder.com/150"}
-            alt={profile.name}
-            className="h-32 w-32 rounded-full border-4 border-blue-500"
-          />
-        </div>
+    <div className="flex flex-col min-h-screen bg-gray-100">
+      <div className="flex justify-center items-center flex-1">
+        <Card className="w-full max-w-lg p-6 text-center">
+          <div className="flex justify-center mb-6">
+            <Avatar
+              src={profile.avatar || "https://via.placeholder.com/150"}
+              alt={profile.name}
+              className="h-32 w-32 rounded-full border-4 border-blue-500"
+            />
+          </div>
 
-  
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold mb-2">
-            Personal Details
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-gray-600 space-y-1">
-          <p>
-            <span className="font-medium">Name:</span> {profile.name}
-          </p>
-          <p>
-            <span className="font-medium">Email:</span> {profile.email}
-          </p>
-          <p>
-            <span className="font-medium">Role:</span> {profile.role}
-          </p>
-        </CardContent>
+          <CardHeader>
+            <CardTitle className="text-2xl font-bold mb-2">
+              Personal Details
+            </CardTitle>
+          </CardHeader>
 
-        <hr className="my-6 border-gray-300" />
-  
-       
-      </Card>
+          <CardContent className="text-gray-600 space-y-1">
+            <p>
+              <span className="font-medium">Name:</span> {profile.name}
+            </p>
+            <p>
+              <span className="font-medium">Email:</span> {profile.email}
+            </p>
+            <p>
+              <span className="font-medium">Role:</span> {profile.role}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
+
+// Footer component
+const Footer = () => (
+  <footer className="bg-background border-t mt-12">
+    <div className="container mx-auto px-4 py-6 flex flex-col md:flex-row justify-between items-center text-sm text-muted-foreground">
+      <p>© {new Date().getFullYear()} BookReview. All rights reserved.</p>
+      <div className="flex space-x-4 mt-2 md:mt-0">
+        <a href="/about" className="hover:text-foreground">About</a>
+        <a href="/contact" className="hover:text-foreground">Contact</a>
+        <a href="/privacy" className="hover:text-foreground">Privacy Policy</a>
+      </div>
+    </div>
+  </footer>
+);

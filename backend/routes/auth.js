@@ -62,7 +62,7 @@ router.post("/login", async (req, res) => {
 });
 
 //user profile
-router.get('/profile:id', protect, async (req,res)=>{
+router.get('/profile', protect, async (req,res)=>{
   try {
     
     const user=User.findById(req.params.id);

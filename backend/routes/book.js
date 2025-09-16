@@ -1,5 +1,6 @@
 const express = require("express");
 const Book = require("../models/Books");
+const Review= require("./review");
 const router = express.Router();
 const protect = require("../middlewares/auth");
 const checkRole = require("../middlewares/role");
@@ -86,5 +87,99 @@ router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res
     res.status(500).json({ message: "Server error try again" });
   }
 });
+
+
+// Featured Books = books with the most reviews
+router.get("/featured", async (req, res) => {
+  try {
+    const books = await Review.aggregate([
+      {
+        $group: {
+          _id: "$bookId",
+          reviewCount: { $sum: 1 }
+        }
+      },
+      { $sort: { reviewCount: -1 } },
+      { $limit: 8 },
+      {
+        $lookup: {
+          from: "books",              // collection name in Mongo
+          localField: "_id",
+          foreignField: "_id",
+          as: "book"
+        }
+      },
+      { $unwind: "$book" },
+      {
+        $project: {
+          _id: "$book._id",
+          title: "$book.title",
+          author: "$book.author",
+          description: "$book.description",
+          coverImage: "$book.coverImage",
+          genre: "$book.genre",
+          createdAt: "$book.createdAt",
+          reviewCount: 1
+        }
+      }
+    ]);
+
+    res.json(books);
+  } catch (error) {
+    console.error("Error fetching featured books:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// New Arrivals (latest createdAt)
+router.get("/newArrivals", async (req, res) => {
+  try {
+    const books = await Book.find().sort({ createdAt: -1 }).limit(8);
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Trending (most likes)
+router.get("/trending", async (req, res) => {
+  try {
+    const books = await Book.find().sort({ likeCount: -1 }).limit(8);
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
+router.post("/:id/like", protect, async (req, res) => {
+  try {
+    const book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    const userId = req.user._id;
+    const alreadyLiked = book.likes.includes(userId);
+
+    if (alreadyLiked) {
+      book.likes.pull(userId); // unlike
+    } else {
+      book.likes.push(userId); // like
+    }
+
+    book.likeCount = book.likes.length;
+    await book.save();
+
+    res.json({ message: alreadyLiked ? "Unliked" : "Liked", book });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
 
 module.exports = router;

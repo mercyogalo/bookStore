@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { TrendingUp, Award, Gem } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
@@ -7,56 +8,26 @@ import { BookList } from './BookList';
 export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
   const [trendingBooks, setTrendingBooks] = useState([]);
   const [topRatedBooks, setTopRatedBooks] = useState([]);
-  const [hiddenGems, setHiddenGems] = useState([]);
+  const [newestBooks, setNewestBooks] = useState([]);
 
   useEffect(() => {
-    // Mock data for popular books
-    const mockTrending = Array.from({ length: 8 }, (_, i) => ({
-      id: `trending-${i + 1}`,
-      title: `Trending Book ${i + 1}`,
-      author: `Author ${i + 1}`,
-      coverImage: `https://images.pexels.com/photos/15959893/pexels-photo-15959893.jpeg?auto=compress&cs=tinysrgb&w=300&h=400`,
-      description: 'A captivating story that has taken the reading world by storm...',
-      rating: 4.5 + Math.random() * 0.5,
-      reviewCount: Math.floor(Math.random() * 500) + 200,
-      likes: Math.floor(Math.random() * 1000) + 500,
-      isLiked: false,
-      isFavorited: false,
-      category: 'Fiction',
-      isNew: i < 2
-    }));
+    const fetchBooks = async () => {
+      try {
+        const [trendingRes, topRatedRes, newestRes] = await Promise.all([
+          axios.get('http://localhost:5000/api/books/trending'),
+          axios.get('http://localhost:5000/api/books/top-rated'),
+          axios.get('http://localhost:5000/api/books/newest')
+        ]);
 
-    const mockTopRated = Array.from({ length: 8 }, (_, i) => ({
-      id: `top-${i + 1}`,
-      title: `Top Rated ${i + 1}`,
-      author: `Acclaimed Author ${i + 1}`,
-      coverImage: `https://images.pexels.com/photos/1666012/pexels-photo-1666012.jpeg?auto=compress&cs=tinysrgb&w=300&h=400`,
-      description: 'An exceptional work that critics and readers alike have praised...',
-      rating: 4.7 + Math.random() * 0.3,
-      reviewCount: Math.floor(Math.random() * 300) + 100,
-      likes: Math.floor(Math.random() * 800) + 300,
-      isLiked: false,
-      isFavorited: false,
-      category: 'Literary Fiction'
-    }));
+        setTrendingBooks(trendingRes.data);
+        setTopRatedBooks(topRatedRes.data);
+        setNewestBooks(newestRes.data);
+      } catch (error) {
+        console.error('Error fetching books:', error);
+      }
+    };
 
-    const mockHiddenGems = Array.from({ length: 8 }, (_, i) => ({
-      id: `gem-${i + 1}`,
-      title: `Hidden Gem ${i + 1}`,
-      author: `Emerging Author ${i + 1}`,
-      coverImage: `https://images.pexels.com/photos/694740/pexels-photo-694740.jpeg?auto=compress&cs=tinysrgb&w=300&h=400`,
-      description: 'A remarkable discovery that deserves more recognition...',
-      rating: 4.6 + Math.random() * 0.4,
-      reviewCount: Math.floor(Math.random() * 50) + 10,
-      likes: Math.floor(Math.random() * 100) + 20,
-      isLiked: false,
-      isFavorited: false,
-      category: 'Indie'
-    }));
-
-    setTrendingBooks(mockTrending);
-    setTopRatedBooks(mockTopRated);
-    setHiddenGems(mockHiddenGems);
+    fetchBooks();
   }, []);
 
   return (
@@ -78,13 +49,14 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
             <Award className="h-4 w-4" />
             <span>Top Rated</span>
           </TabsTrigger>
-          <TabsTrigger value="hidden-gems" className="flex items-center space-x-2">
+          <TabsTrigger value="newest" className="flex items-center space-x-2">
             <Gem className="h-4 w-4" />
-            <span>Hidden Gems</span>
+            <span>Newest Uploads</span>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="trending" className="space-y-6">
+        {/* Trending */}
+        <TabsContent value="trending">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -93,8 +65,8 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <BookList 
-                books={trendingBooks} 
+              <BookList
+                books={trendingBooks}
                 onBookClick={onBookClick}
                 onLike={onLike}
                 onFavorite={onFavorite}
@@ -103,7 +75,8 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="top-rated" className="space-y-6">
+        {/* Top Rated */}
+        <TabsContent value="top-rated">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
@@ -112,8 +85,8 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <BookList 
-                books={topRatedBooks} 
+              <BookList
+                books={topRatedBooks}
                 onBookClick={onBookClick}
                 onLike={onLike}
                 onFavorite={onFavorite}
@@ -122,17 +95,18 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="hidden-gems" className="space-y-6">
+        {/* Newest Uploads */}
+        <TabsContent value="newest">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Gem className="h-5 w-5 text-purple-500" />
-                <span>Hidden Gems</span>
+                <Gem className="h-5 w-5 text-brown-600" />
+                <span>Newest Uploads</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <BookList 
-                books={hiddenGems} 
+              <BookList
+                books={newestBooks}
                 onBookClick={onBookClick}
                 onLike={onLike}
                 onFavorite={onFavorite}

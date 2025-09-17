@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Book, Heart, Home, TrendingUp, User, LogIn, Menu } from 'lucide-react';
+import { Book, Heart, Home, TrendingUp, User, LogIn, Menu, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
 import {
@@ -97,6 +97,12 @@ export function Navbar() {
               <Button variant="outline" size="sm">
                 <LogIn className="h-4 w-4 mr-2" />
                 Login
+              </Button>
+            </Link>
+            <Link to="/">
+              <Button variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
               </Button>
             </Link>
           </nav>

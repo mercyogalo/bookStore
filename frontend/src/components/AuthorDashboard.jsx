@@ -26,7 +26,7 @@ export const AuthorDashboard = () => {
   });
 
   const token = localStorage.getItem("token");
-
+  alert(token);
   // 📌 Fetch books
   const fetchBooks = async () => {
     try {

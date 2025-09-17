@@ -1,11 +1,11 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "./components/Navbar";
-import { Home } from "./pages/Home";
 import { Popular } from "./pages/Popular";
 import { Favorites } from "./pages/Favorites";
 import { Profile } from "./pages/Profile";
 import { BookPage } from "./pages/BookPage";
-import { LoginSignup } from "./pages/LoginSignup";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
@@ -21,11 +21,11 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <div className="min-h-screen bg-background">
-            <Navbar />
+           
 
-            <main className="w-full px-6 py-8">
+            <main className="w-full ">
               <Routes>
-                <Route path="/" element={<Home />} />
+                <Route path="/" element={<Login />} />
                 <Route path="/author-dashboard" element={<AuthorDashboard />} />
                 <Route path="/popular" element={<Popular />} />
                 <Route path="/favorites" element={<Favorites />} />
@@ -33,7 +33,7 @@ function App() {
                 <Route path="/book/:id" element={<BookPage />} />
                 <Route path="/create-book" element={<CreateBookPage />} />
                 <Route path="/update-book/:id" element={<UpdateBookPage />} />
-                <Route path="/login" element={<LoginSignup />} />
+                <Route path="/signup" element={<Signup />} />
                 <Route path="/reviewer-dashboard" element={<ReviewerDashboard />} />
               </Routes>
             </main>

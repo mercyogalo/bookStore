@@ -6,15 +6,15 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+} from "../components/ui/card";
+import { Button } from "../components/ui/button";
 import {
   Carousel,
   CarouselContent,
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "@/components/ui/carousel";
+} from "../components/ui/carousel";
 import { BookList } from "../components/BookList";
 
 export const Home = ({ onBookClick, onLike, onFavorite }) => {
@@ -43,7 +43,7 @@ export const Home = ({ onBookClick, onLike, onFavorite }) => {
         const [featuredRes, trendingRes, allBooksRes] = await Promise.all([
           axios.get("http://localhost:5000/api/book/featured"),
           axios.get("http://localhost:5000/api/book/trending"),
-          axios.get("http://localhost:5000/api/book"),
+          axios.get("http://localhost:5000/api/book/newArrivals"),
         ]);
 
         setFeaturedBooks(featuredRes.data);

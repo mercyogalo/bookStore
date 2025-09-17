@@ -1,6 +1,6 @@
 const express = require("express");
 const Book = require("../models/Books");
-const Review= require("./review");
+const Review= require("../models/Review");
 const router = express.Router();
 const protect = require("../middlewares/auth");
 const checkRole = require("../middlewares/role");

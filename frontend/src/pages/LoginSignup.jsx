@@ -14,6 +14,7 @@ export const LoginSignup = ({ onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
   const { login, signup } = useAuth();
+  const [response, setResponse]=useState("");
 
   const navigate = useNavigate();
 
@@ -39,13 +40,17 @@ export const LoginSignup = ({ onClose }) => {
       const res = await axios.post(`${api}/auth/login`, loginForm);
       const token = res.data.token;
       localStorage.setItem('authToken', token);
-      if (res.data.role=="author"){
-        navigate('/authorDashboard');
-      }else{
-        navigate('/');
-      }
+      setResponse(res.data);
+     
+       if (res.data.role === "author") {
+      navigate('/author-dashboard');
+    } else if (res.data.role === "reviewer") {
+      navigate('/reviewer-dashboard');
+    } else {
+      navigate('/');
+    }
       
-      alert("Successfully logged in");
+      
     } catch (error) {
       console.log("Login failed:", error);
       alert("Failed with error");
@@ -71,7 +76,13 @@ export const LoginSignup = ({ onClose }) => {
       const token = res.data.token;
       localStorage.setItem('authToken', token);
 
+      if (res.data.role === "author") {
+      navigate('/author-dashboard');
+    } else if (res.data.role === "reviewer") {
+      navigate('/reviewer-dashboard');
+    } else {
       navigate('/');
+    }
       alert("Successfully registered");
     } catch (error) {
       console.error("Registration error:", error);
@@ -168,6 +179,7 @@ export const LoginSignup = ({ onClose }) => {
                   onChange={(e) => setSignupForm(prev => ({ ...prev, role: e.target.value }))}
                   className="w-full px-4 py-2 border rounded"
                 >
+                   <option>Choose roles</option>
                   <option value="reviewer">Reviewer</option>
                   <option value="author">Author</option>
                 </select>
@@ -199,6 +211,10 @@ export const LoginSignup = ({ onClose }) => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Creating account...' : 'Create Account'}
                 </Button>
+
+                <p className="text-red-500 text-sm mt-2">
+                    {response}
+                  </p>
 
                 {error && (
                   <p className="text-red-500 text-sm mt-2">

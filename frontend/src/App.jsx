@@ -10,6 +10,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
 import { AuthorDashboard } from "./components/AuthorDashboard";
+import { ReviewerDashboard } from "./components/ReviewerDashboard.jsx";
 import UpdateBookPage from "./pages/UpdateBookPage";
 import CreateBookPage from "./pages/CreateBookPage";
 
@@ -22,7 +23,7 @@ function App() {
           <div className="min-h-screen bg-background">
             <Navbar />
 
-            <main className="container mx-auto px-4 py-8">
+            <main className="w-full px-6 py-8">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/author-dashboard" element={<AuthorDashboard />} />
@@ -33,6 +34,7 @@ function App() {
                 <Route path="/create-book" element={<CreateBookPage />} />
                 <Route path="/update-book/:id" element={<UpdateBookPage />} />
                 <Route path="/login" element={<LoginSignup />} />
+                <Route path="/reviewer-dashboard" element={<ReviewerDashboard />} />
               </Routes>
             </main>
 

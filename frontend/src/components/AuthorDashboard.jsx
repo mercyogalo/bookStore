@@ -26,7 +26,7 @@ export const AuthorDashboard = () => {
     link: ''
   });
 
-  // 📌 Fetch books
+ 
   const fetchBooks = async () => {
     try {
       const res = await axiosInstance.get(`${api}/book/allBooks`);
@@ -40,9 +40,9 @@ export const AuthorDashboard = () => {
     fetchBooks();
   }, []);
 
-    console.log(bookForm);
+  console.log(bookForm);
 
-  // 📌 Create book
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
@@ -60,7 +60,6 @@ export const AuthorDashboard = () => {
         yearPublished: '',
         link: ''
       });
-    
 
       fetchBooks();
     } catch (error) {
@@ -70,8 +69,9 @@ export const AuthorDashboard = () => {
     }
   };
 
-  // 📌 Delete Book
+ 
   const handleDelete = async (id) => {
+    console.log(id);
     if (!window.confirm("Are you sure you want to delete this book?")) return;
 
     try {
@@ -90,7 +90,7 @@ export const AuthorDashboard = () => {
         <p className="text-muted-foreground">Manage your books and connect with readers</p>
       </div>
 
-      {/* 📊 Stats */}
+     
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
@@ -106,7 +106,7 @@ export const AuthorDashboard = () => {
           <TabsTrigger value="manage">Manage Books</TabsTrigger>
         </TabsList>
 
-        {/* Upload Form */}
+      
         <TabsContent value="upload">
           <Card className="w-full md:w-3/4 lg:w-3/4 mx-auto"> 
             <CardContent>
@@ -128,40 +128,56 @@ export const AuthorDashboard = () => {
           </Card>
         </TabsContent>
 
-        {/* Manage Tab */}
+      
         <TabsContent value="manage">
           <div className="space-y-4">
             {books.map((book) => (
               <Card key={book._id}>
                 <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center space-x-2">
-                        <h3 className="text-lg font-semibold">{book.title}</h3>
-                        <Badge variant="default">Published</Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground line-clamp-2">{book.description}</p>
-                      <div className="flex items-center space-x-4 text-sm text-muted-foreground">
-                        <span>Genre: {book.genre}</span>
-                        <span>Year: {book.yearPublished}</span>
-                      </div>
+                
+                  <div className="flex gap-6">
+                   
+                    <div className="w-32 h-44 flex-shrink-0">
+                      <img
+                        src={book.coverImage || ''}
+                        alt={book.title}
+                        className="w-full h-full object-cover rounded-md"
+                      />
                     </div>
-                    <div className="flex items-center space-x-2">
-                  
-                      <Link to={`/update-book/${book._id}`}>
-                        <Button variant="outline" size="sm">
-                          <Edit className="h-4 w-4 mr-2" /> Edit
+
+                    
+                    <div className="flex flex-col justify-between flex-1">
+                     
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <h3 className="text-lg font-semibold">{book.title}</h3>
+                          <Badge variant="default">Published</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-2">{book.description}</p>
+                        <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+                          <span>Author: {book.author}</span>
+                          <span>Genre: {book.genre}</span>
+                          <span>Year: {book.yearPublished}</span>
+                        </div>
+                      </div>
+
+                      
+                      <div className="flex items-center space-x-2 mt-4">
+                        <Link to={`/update-book/${book._id}`}>
+                          <Button variant="outline" size="sm">
+                            <Edit className="h-4 w-4 mr-2" /> Edit
+                          </Button>
+                        </Link>
+                        <Button variant="outline" size="sm" onClick={() => handleDelete(book._id)}>
+                          <Trash2 className="h-4 w-4 mr-2" /> Delete
                         </Button>
-                      </Link>
-                      <Button variant="outline" size="sm" onClick={() => handleDelete(book._id)}>
-                        <Trash2 className="h-4 w-4 mr-2" /> Delete
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <Eye className="h-4 w-4 mr-2" /> View
-                      </Button>
-                      <Button variant="outline" size="sm">
-                        <BarChart3 className="h-4 w-4 mr-2" /> Analytics
-                      </Button>
+                        <Button variant="outline" size="sm">
+                          <Eye className="h-4 w-4 mr-2" /> View
+                        </Button>
+                        <Button variant="outline" size="sm">
+                          <BarChart3 className="h-4 w-4 mr-2" /> Analytics
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

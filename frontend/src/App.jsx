@@ -12,7 +12,7 @@ import { Toaster } from "./components/ui/toaster";
 import { AuthorDashboard } from "./components/AuthorDashboard";
 import { ReviewerDashboard } from "./components/ReviewerDashboard.jsx";
 import UpdateBookPage from "./pages/UpdateBookPage";
-import CreateBookPage from "./pages/CreateBookPage";
+
 
 
 function App() {
@@ -31,7 +31,6 @@ function App() {
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/book/:id" element={<BookPage />} />
-                <Route path="/create-book" element={<CreateBookPage />} />
                 <Route path="/update-book/:id" element={<UpdateBookPage />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/reviewer-dashboard" element={<ReviewerDashboard />} />

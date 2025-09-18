@@ -54,7 +54,7 @@ const UpdateBookPage = () => {
     try {
       await axiosInstance.put(`${api}/book/updateBook/${id}`, formData);
       toast({ title: "Book updated successfully!", status: "success" });
-      navigate("/authorDashboard");
+      navigate("/author-dashboard");
     } catch (error) {
       toast({
         title: error.response?.data?.message || "Failed to update book",
@@ -91,7 +91,7 @@ const UpdateBookPage = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1">Description</label>
-            <Textarea name="description" value={formData.description} onChange={handleChange} required />
+            <Textarea name="description" rows={8} value={formData.description} onChange={handleChange} required />
           </div>
 
           <div>
@@ -111,7 +111,7 @@ const UpdateBookPage = () => {
 
           <div>
             <label className="block text-sm font-medium mb-1 w-full gap-2">Chapters</label>
-            <Textarea name="chapters" value={formData.chapters} onChange={handleChange} />
+            <Textarea name="chapters" rows={8} value={formData.chapters} onChange={handleChange} />
           </div>
 
           <Button type="submit" className="w-full">Save Changes</Button>

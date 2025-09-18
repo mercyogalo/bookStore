@@ -32,7 +32,7 @@ router.post('/createBook', protect, checkRole(["author"]), async (req, res) => {
   }
 });
 
-// Get all Books
+// Get all Books of a specific author
 router.get('/allBooks', protect, checkRole(["author"]), async (req, res) => {
   try {
     const books = await Book.find();
@@ -43,7 +43,7 @@ router.get('/allBooks', protect, checkRole(["author"]), async (req, res) => {
   }
 });
 
-// Update Book
+// Update Book of a specific author
 router.put('/updateBook/:id', protect, checkRole(["author"]), async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -66,7 +66,7 @@ router.put('/updateBook/:id', protect, checkRole(["author"]), async (req, res) =
   }
 });
 
-// Delete Book
+// Delete Book of a specific author
 router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -90,7 +90,7 @@ router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res
 
 
 // Featured Books = books with the most reviews
-router.get("/featured", async (req, res) => {
+router.get("/featured", protect,async (req, res) => {
   try {
     const books = await Review.aggregate([
       {
@@ -133,7 +133,7 @@ router.get("/featured", async (req, res) => {
 
 
 // New Arrivals (latest createdAt)
-router.get("/newArrivals", async (req, res) => {
+router.get("/newArrivals",protect, async (req, res) => {
   try {
     const books = await Book.find().sort({ createdAt: -1 }).limit(8);
     res.json(books);
@@ -144,10 +144,10 @@ router.get("/newArrivals", async (req, res) => {
 });
 
 // Trending (most likes)
-router.get("/trending", async (req, res) => {
+router.get("/trending",protect,  async (req, res) => {
   try {
     const books = await Book.find().sort({ likeCount: -1 }).limit(8);
-    res.json(books);
+    res.status(200).json(books);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });

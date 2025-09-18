@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Book, Heart, Home, TrendingUp, User, LogIn, Menu, LogOut } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { ThemeToggle } from './ThemeToggle';
@@ -12,6 +12,15 @@ import { useState } from 'react';
 export function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const isAuthenticated = !!localStorage.getItem("token");
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("token");
+    navigate('/'); 
+  };
 
   const navItems = [
     { name: 'Home', path: '/', icon: Home },
@@ -48,6 +57,7 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container flex h-14 items-center">
+        {/* Desktop Nav */}
         <div className="mr-4 hidden md:flex">
           <Link to="/" className="mr-6 flex items-center space-x-2">
             <Book className="h-6 w-6" />
@@ -84,6 +94,7 @@ export function Navbar() {
           </SheetContent>
         </Sheet>
 
+        {/* Right side */}
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <Link to="/" className="flex items-center space-x-2 md:hidden">
@@ -93,18 +104,19 @@ export function Navbar() {
           </div>
           <nav className="flex items-center space-x-2">
             <ThemeToggle />
-            <Link to="/login">
-              <Button variant="outline" size="sm">
-                <LogIn className="h-4 w-4 mr-2" />
-                Login
-              </Button>
-            </Link>
-            <Link to="/">
-              <Button variant="outline" size="sm">
+            {!isAuthenticated ? (
+              <Link to="/login">
+                <Button variant="outline" size="sm">
+                  <LogIn className="h-4 w-4 mr-2" />
+                  Login
+                </Button>
+              </Link>
+            ) : (
+              <Button variant="outline" size="sm" onClick={handleLogout}>
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>
-            </Link>
+            )}
           </nav>
         </div>
       </div>

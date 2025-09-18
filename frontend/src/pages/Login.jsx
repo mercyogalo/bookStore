@@ -27,14 +27,15 @@ export function LoginForm({ className, ...props }) {
         password,
       })
 
-      localStorage.setItem("authToken", res.data.token)
+      localStorage.setItem("token", res.data.token)
+      console.log(res.data);
 
       if (res.data.role === "author") {
         navigate("/author-dashboard")
       } else if (res.data.role === "reviewer") {
         navigate("/reviewer-dashboard")
       } else {
-        navigate("/dashboard")
+        navigate("/")
       }
     } catch (err) {
       setError(err.response?.data?.message || "Login failed")

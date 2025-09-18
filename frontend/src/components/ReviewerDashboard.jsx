@@ -6,6 +6,8 @@ import { Badge } from './ui/badge';
 import { io } from 'socket.io-client';
 import api from '../Utils/Api';
 import { useToast } from '../hooks/use-toast';
+import axios from 'axios';
+import { Navbar } from './Navbar';
 
 const socket = io("http://localhost:5000"); // connect to backend
 
@@ -15,16 +17,17 @@ export const ReviewerDashboard = () => {
   const [reviewContent, setReviewContent] = useState('');
   const [reviews, setReviews] = useState([]);
   const { toast } = useToast();
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem('token');
 
   // 📌 Fetch all author books
   const fetchBooks = async () => {
     try {
-      const res = await fetch(`${api}/book/allBooks`, {
+      const res = await axios.get(`${api}/book/trending`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const data = await res.json();
+      const data = res.data
       setBooks(data);
+      console.log(res);
     } catch (err) {
       console.error("Error fetching books:", err);
     }
@@ -84,6 +87,7 @@ export const ReviewerDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <Navbar />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Reviewer Dashboard</h1>
         <p className="text-muted-foreground">Read books and leave your reviews</p>

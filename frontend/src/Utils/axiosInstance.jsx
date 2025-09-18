@@ -1,0 +1,18 @@
+import axios from 'axios';
+import api from './Api';
+
+
+const axiosInstance=axios.create({
+    baseURL:api,
+});
+
+axiosInstance.interceptors.request.use((config)=>{
+        const token=localStorage.getItem("token");
+        if(token){
+            config.headers.Auhtorization=`Bearer:${token}`;
+            console.log(token);
+        }
+        return config;
+})
+
+export default axiosInstance;

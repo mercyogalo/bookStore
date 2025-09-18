@@ -7,32 +7,27 @@ import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-import api from '../Utils/Api'; // e.g., http://localhost:5000/api
+import axiosInstance from '../Utils/axiosInstance';
+import api from '../Utils/Api';
 
 export const AuthorDashboard = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [books, setBooks] = useState([]);
-  const [editingBook, setEditingBook] = useState(null);
   const [bookForm, setBookForm] = useState({
     title: '',
     description: '',
     genre: '',
     coverImage: '',
     chapters: '',
-    author:'',
-    yearPublished:'',
-    link:''
+    author: '',
+    yearPublished: '',
+    link: ''
   });
 
-  const token = localStorage.getItem("token");
-  alert(token);
   // 📌 Fetch books
   const fetchBooks = async () => {
     try {
-      const res = await axios.get(`${api}/book/allBooks`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosInstance.get(`${api}/book/allBooks`);
       setBooks(res.data);
     } catch (error) {
       console.error("Error fetching books:", error.response?.data || error.message);
@@ -43,23 +38,13 @@ export const AuthorDashboard = () => {
     fetchBooks();
   }, []);
 
-  // 📌 Upload or Update Book
+  // 📌 Create book
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
 
     try {
-      if (editingBook) {
-        // Update book
-        await axios.put(`${api}/book/updateBook/${editingBook._id}`, bookForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      } else {
-        // Create book
-        await axios.post(`${api}/book/createBook`, bookForm, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-      }
+      await axiosInstance.post(`${api}/book/createBook`, bookForm);
 
       setBookForm({
         title: '',
@@ -67,14 +52,14 @@ export const AuthorDashboard = () => {
         genre: '',
         coverImage: '',
         chapters: '',
-        author:'',
-        yearPublished:'',
-        link:''
+        author: '',
+        yearPublished: '',
+        link: ''
       });
-      setEditingBook(null);
+
       fetchBooks();
     } catch (error) {
-      console.error("Error submitting book:", error.response?.data || error.message);
+      console.error("Error creating book:", error.response?.data || error.message);
     } finally {
       setIsUploading(false);
     }
@@ -85,28 +70,11 @@ export const AuthorDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
 
     try {
-      await axios.delete(`${api}/book/deleteBook/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      await axiosInstance.delete(`${api}/book/deleteBook/${id}`);
       fetchBooks();
     } catch (error) {
       console.error("Error deleting book:", error.response?.data || error.message);
     }
-  };
-
-  // 📌 Start editing
-  const handleEdit = (book) => {
-    setEditingBook(book);
-    setBookForm({
-      title: book.title,
-      description: book.description,
-      genre: book.genre,
-      coverImage: book.coverImage,
-      chapters: book.chapters,
-      author: book.author,
-      yearPublished: book.yearPublished,
-      link: book.link
-    });
   };
 
   return (
@@ -128,11 +96,11 @@ export const AuthorDashboard = () => {
 
       <Tabs defaultValue="upload" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="upload">{editingBook ? "Edit Book" : "Upload Book"}</TabsTrigger>
+          <TabsTrigger value="upload">Upload Book</TabsTrigger>
           <TabsTrigger value="manage">Manage Books</TabsTrigger>
         </TabsList>
 
-        {/* Upload / Edit Form */}
+        {/* Upload Form */}
         <TabsContent value="upload">
           <Card className="w-full md:w-3/4 lg:w-3/4 mx-auto"> 
             <CardContent>
@@ -147,7 +115,7 @@ export const AuthorDashboard = () => {
                 <Textarea placeholder="Sample Chapters" value={bookForm.chapters} onChange={e => setBookForm(p => ({...p, chapters: e.target.value}))} required />
                 
                 <Button type="submit" disabled={isUploading} className="w-full">
-                  {isUploading ? 'Saving...' : editingBook ? 'Update Book' : 'Upload Book'}
+                  {isUploading ? 'Saving...' : 'Upload Book'}
                 </Button>
               </form>
             </CardContent>
@@ -173,9 +141,12 @@ export const AuthorDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="sm" onClick={() => handleEdit(book)}>
-                        <Edit className="h-4 w-4 mr-2" /> Edit
-                      </Button>
+                      {/* Redirects to UpdateBookPage */}
+                      <Link to={`/books/update/${book._id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="h-4 w-4 mr-2" /> Edit
+                        </Button>
+                      </Link>
                       <Button variant="outline" size="sm" onClick={() => handleDelete(book._id)}>
                         <Trash2 className="h-4 w-4 mr-2" /> Delete
                       </Button>

@@ -39,7 +39,7 @@ export function RegisterForm({ className, ...props }) {
       })
 
       // Save token
-      localStorage.setItem("authToken", res.data.token)
+      localStorage.setItem("token", res.data.token)
 
       // Redirect based on role
       if (res.data.role === "author") {
@@ -150,7 +150,6 @@ export default function SignUp() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
 
-     {/* Right side image for large screens */}
       <div className="bg-muted relative hidden lg:block">
         <img
           src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/172/784/original/Pile_de_livres_automne.jpeg?1756202167"
@@ -159,7 +158,8 @@ export default function SignUp() {
         />
       </div>
 
-      {/* Left section */}
+   
+   
       <div className="flex flex-col gap-4 p-6 md:p-10 m-3">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">

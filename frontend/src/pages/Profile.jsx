@@ -4,6 +4,7 @@ import { Avatar } from "../components/ui/avatar";
 import { Skeleton } from "../components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
+import { Navbar } from '../components/Navbar';
 
 export const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -64,6 +65,7 @@ export const Profile = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-100">
+      <Navbar />
       <div className="flex justify-center items-center flex-1">
         <Card className="w-full max-w-lg p-6 text-center">
           <div className="flex justify-center mb-6">

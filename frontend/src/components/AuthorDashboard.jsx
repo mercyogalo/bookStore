@@ -8,7 +8,9 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../Utils/axiosInstance';
+import axios from 'axios';
 import api from '../Utils/Api';
+import { Navbar } from './Navbar';
 
 export const AuthorDashboard = () => {
   const [isUploading, setIsUploading] = useState(false);
@@ -38,6 +40,8 @@ export const AuthorDashboard = () => {
     fetchBooks();
   }, []);
 
+    console.log(bookForm);
+
   // 📌 Create book
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -56,6 +60,7 @@ export const AuthorDashboard = () => {
         yearPublished: '',
         link: ''
       });
+    
 
       fetchBooks();
     } catch (error) {
@@ -79,6 +84,7 @@ export const AuthorDashboard = () => {
 
   return (
     <div className="space-y-6">
+      <Navbar />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Author Dashboard</h1>
         <p className="text-muted-foreground">Manage your books and connect with readers</p>
@@ -141,8 +147,8 @@ export const AuthorDashboard = () => {
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {/* Redirects to UpdateBookPage */}
-                      <Link to={`/books/update/${book._id}`}>
+                  
+                      <Link to={`/update-book/${book._id}`}>
                         <Button variant="outline" size="sm">
                           <Edit className="h-4 w-4 mr-2" /> Edit
                         </Button>

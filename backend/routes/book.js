@@ -7,7 +7,7 @@ const checkRole = require("../middlewares/role");
 
 
 router.post('/createBook', protect, checkRole(["author"]), async (req, res) => {
-  const { title, author, yearPublished, link, description, coverImage, genre, chapters } = req.body;
+  const { title, author, yearPublished,link, description, coverImage, genre, chapters } = req.body;
   try {
     if (!title || !author || !link || !description) {
       return res.status(400).json({ message: "Please enter all required fields" });
@@ -42,7 +42,16 @@ router.get('/allBooks', protect, checkRole(["author"]), async (req, res) => {
     res.status(500).json({ message: "Server error kindly try again" });
   }
 });
-
+//Get specific book
+router.get('/:id', protect, async(req,res)=>{
+  try {
+    const book=await Book.findById(req.params.id);
+    res.status(200).json(book);
+  } catch (error) {
+      console.error("The error is:",error);
+      res.status(500).json({message:"Server error kindly try again"});
+  }
+})
 // Update Book of a specific author
 router.put('/updateBook/:id', protect, checkRole(["author"]), async (req, res) => {
   try {

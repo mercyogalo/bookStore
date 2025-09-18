@@ -2,13 +2,13 @@ const express = require("express");
 const User = require("../models/User");
 const router = express.Router();
 const generateToken = require("../Utils/token");
-const protect=require('../middlewares/auth');
+const protect = require("../middlewares/auth");
 
 
 router.post("/register", async (req, res) => {
-  const { name, email, role,  password } = req.body;
+  const { name, email, role, password } = req.body;
   try {
-    if (!name || !password || !email || !role ) {
+    if (!name || !password || !email || !role) {
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
@@ -18,14 +18,13 @@ router.post("/register", async (req, res) => {
     }
 
     const user = await User.create({ name, email, role, password });
-    const token = generateToken(user._id);
 
     res.status(201).json({
       userID: user._id,
       username: user.name,
       email: user.email,
-      role:user.role,
-      token,
+      role: user.role,
+      token: generateToken(user), 
     });
   } catch (error) {
     console.error(error);
@@ -33,7 +32,6 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// LOGIN user
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log("Incoming body:", req.body);
@@ -47,14 +45,12 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = generateToken(user._id);
-
     res.status(200).json({
       userID: user._id,
       username: user.name,
       email: user.email,
-      role:user.role,
-      token,
+      role: user.role,
+      token: generateToken(user),
     });
   } catch (error) {
     console.error(error);
@@ -62,11 +58,9 @@ router.post("/login", async (req, res) => {
   }
 });
 
-//user profile
-router.get('/profile', protect, async (req,res)=>{
+
+router.get("/profile", protect, async (req, res) => {
   try {
-    
-    const user=User.findById(req.params.id);
     res.status(200).json({
       userID: req.user._id,
       username: req.user.name,
@@ -76,8 +70,8 @@ router.get('/profile', protect, async (req,res)=>{
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({message:"Server error in profile fetch"})
+    res.status(500).json({ message: "Server error in profile fetch" });
   }
-})
+});
 
 module.exports = router;

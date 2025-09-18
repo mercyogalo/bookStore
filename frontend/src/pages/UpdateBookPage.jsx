@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Textarea, Button, Alert } from "../components/ui";
+import { Input } from "../components/ui/input";
+import { Textarea } from "../components/ui/textarea";
+import { Button } from "../components/ui/button";
+import { Alert } from "../components/ui/alert";
 import { useToast } from "../hooks/use-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import axiosInstance from "../Utils/axiosInstance";
 import api from "../Utils/Api";
+import { Navbar } from '../components/Navbar';
 
 const UpdateBookPage = () => {
   const { id } = useParams();
@@ -22,28 +26,22 @@ const UpdateBookPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // 📌 Fetch book details by ID
   useEffect(() => {
     const fetchBookDetails = async () => {
       try {
         const res = await axiosInstance.get(`${api}/book/${id}`);
         setFormData(res.data);
-      } catch (err) {
+      } catch {
         setError("Failed to fetch book details.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchBookDetails();
   }, [id]);
 
-  // 📌 Check for token
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      navigate("/login");
-    }
+    if (!localStorage.getItem("token")) navigate("/login");
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -51,15 +49,12 @@ const UpdateBookPage = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // 📌 Submit update
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     try {
       await axiosInstance.put(`${api}/book/updateBook/${id}`, formData);
-
       toast({ title: "Book updated successfully!", status: "success" });
-      navigate("/authorDashboard"); // ✅ redirect back to dashboard
+      navigate("/authorDashboard");
     } catch (error) {
       toast({
         title: error.response?.data?.message || "Failed to update book",
@@ -72,63 +67,57 @@ const UpdateBookPage = () => {
   if (error) return <Alert status="error">{error}</Alert>;
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">Update Book</h1>
-      <Form onSubmit={handleSubmit} className="space-y-4">
-        <Input
-          name="title"
-          label="Title"
-          value={formData.title}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          name="yearPublished"
-          label="Year Published"
-          value={formData.yearPublished}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          name="genre"
-          label="Genre"
-          value={formData.genre}
-          onChange={handleChange}
-          required
-        />
-        <Textarea
-          name="description"
-          label="Description"
-          value={formData.description}
-          onChange={handleChange}
-          required
-        />
-        <Input
-          name="link"
-          label="Link"
-          value={formData.link}
-          onChange={handleChange}
-        />
-        <Input
-          name="coverImage"
-          label="Cover Image URL"
-          value={formData.coverImage}
-          onChange={handleChange}
-        />
-        <Input
-          name="author"
-          label="Author"
-          value={formData.author}
-          onChange={handleChange}
-        />
-        <Textarea
-          name="chapters"
-          label="Chapters"
-          value={formData.chapters}
-          onChange={handleChange}
-        />
-        <Button type="submit">Save Changes</Button>
-      </Form>
+    <div>
+       <Navbar />
+    <div className="flex justify-center">
+     
+      <div className="w-3/4 max-w-4xl p-8 bg-white shadow rounded-lg">
+        <h1 className="text-2xl font-bold mb-6 text-center">Update Book</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Title</label>
+            <Input name="title" value={formData.title} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Year Published</label>
+            <Input name="yearPublished" value={formData.yearPublished} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Genre</label>
+            <Input name="genre" value={formData.genre} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Description</label>
+            <Textarea name="description" value={formData.description} onChange={handleChange} required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Link</label>
+            <Input name="link" value={formData.link} onChange={handleChange} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Cover Image URL</label>
+            <Input name="coverImage" value={formData.coverImage} onChange={handleChange} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Author</label>
+            <Input name="author" value={formData.author} onChange={handleChange} />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1 w-full gap-2">Chapters</label>
+            <Textarea name="chapters" value={formData.chapters} onChange={handleChange} />
+          </div>
+
+          <Button type="submit" className="w-full">Save Changes</Button>
+        </form>
+      </div>
+    </div>
     </div>
   );
 };

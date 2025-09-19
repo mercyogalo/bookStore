@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Heart, Filter, SortAsc } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { BookList } from '../components/BookList';
 import { useAuth } from '../context/AuthContext';
+import axiosInstance from '../Utils/axiosInstance';
+import api from '../Utils/Api';
 
 export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   const [favorites, setFavorites] = useState([]);
@@ -16,36 +18,31 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
     const token = localStorage.getItem('token');
     if (!token) {
       window.location.href = '/login';
+    } else {
+      fetchFavorites();
     }
   }, []);
 
-  useEffect(() => {
-    // Mock favorites data
-    const mockFavorites = Array.from({ length: 6 }, (_, i) => ({
-      id: `fav-${i + 1}`,
-      title: `Favorite Book ${i + 1}`,
-      author: `Beloved Author ${i + 1}`,
-      coverImage: `https://images.pexels.com/photos/${[159866, 1666012, 694740, 15959893, 1129019, 415071][i]}/pexels-photo-${[159866, 1666012, 694740, 15959893, 1129019, 415071][i]}.jpeg?auto=compress&cs=tinysrgb&w=300&h=400`,
-      description: 'A book that holds a special place in your heart...',
-      rating: 4.5 + Math.random() * 0.5,
-      reviewCount: Math.floor(Math.random() * 100) + 20,
-      likes: Math.floor(Math.random() * 300) + 100,
-      isLiked: Math.random() > 0.5,
-      isFavorited: true,
-      category: ['Fiction', 'Mystery', 'Romance', 'Fantasy', 'Thriller', 'Drama'][i],
-      dateAdded: new Date(Date.now() - Math.random() * 60 * 24 * 60 * 60 * 1000).toLocaleDateString()
-    }));
-
-    setFavorites(mockFavorites);
-    setFilteredFavorites(mockFavorites);
-  }, []);
+  // Fetch favorites from backend
+  const fetchFavorites = async () => {
+    try {
+      const response = await axiosInstance.get(`${api}/book/favorites`);
+      // axios already parses JSON, so no need for response.json()
+      setFavorites(response.data);
+      setFilteredFavorites(response.data);
+    } catch (error) {
+      console.error('Failed to fetch favorites:', error);
+    }
+  };
 
   useEffect(() => {
     let filtered = [...favorites];
 
     // Apply category filter
     if (filterBy !== 'all') {
-      filtered = filtered.filter(book => book.category.toLowerCase() === filterBy.toLowerCase());
+      filtered = filtered.filter(
+        (book) => book.category?.toLowerCase() === filterBy.toLowerCase()
+      );
     }
 
     // Apply sorting
@@ -61,34 +58,16 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
         break;
       case 'recently-added':
       default:
-        filtered.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+        filtered.sort(
+          (a, b) => new Date(b.dateAdded) - new Date(a.dateAdded)
+        );
         break;
     }
 
     setFilteredFavorites(filtered);
   }, [favorites, sortBy, filterBy]);
 
-  const fetchFavorites = async () => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch('http://localhost:5000/api/favorites', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (response.status === 401) {
-        localStorage.removeItem('token');
-        window.location.href = '/login';
-        return;
-      }
-
-      const data = await response.json();
-      setFavorites(data);
-    } catch (error) {
-      console.error('Failed to fetch favorites:', error);
-    }
-  };
-
-  const categories = ['all', ...new Set(favorites.map(book => book.category.toLowerCase()))];
+  const categories = ['all', ...new Set(favorites.map((book) => book.category?.toLowerCase()))];
 
   if (!user) {
     return (
@@ -142,9 +121,11 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
                       onChange={(e) => setFilterBy(e.target.value)}
                       className="text-sm border rounded-md px-3 py-1 bg-background"
                     >
-                      {categories.map(category => (
+                      {categories.map((category) => (
                         <option key={category} value={category}>
-                          {category === 'all' ? 'All Categories' : category.charAt(0).toUpperCase() + category.slice(1)}
+                          {category === 'all'
+                            ? 'All Categories'
+                            : category.charAt(0).toUpperCase() + category.slice(1)}
                         </option>
                       ))}
                     </select>

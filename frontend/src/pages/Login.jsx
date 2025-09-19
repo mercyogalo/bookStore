@@ -2,12 +2,13 @@
 import { useState } from "react"
 import axios from "axios"
 import { useNavigate, Link } from "react-router-dom"
-
+import axiosInstance from "../Utils/axiosInstance"
 import { cn } from "../lib/utils"
 import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { GalleryVerticalEnd } from "lucide-react"
+import api from '../Utils/Api'
 
 export function LoginForm({ className, ...props }) {
   const [email, setEmail] = useState("")
@@ -22,13 +23,10 @@ export function LoginForm({ className, ...props }) {
     setError("")
 
     try {
-      const res = await axios.post("http://localhost:5000/api/auth/login", {
+      const res = await axios.post(`${api}/auth/login`, {
         email,
         password,
       })
-
-      localStorage.setItem("token", res.data.token)
-      console.log(res.data);
 
       if (res.data.role === "author") {
         navigate("/author-dashboard")

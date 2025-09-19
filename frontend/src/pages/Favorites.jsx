@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Heart, Filter, SortAsc } from 'lucide-react';
+import { Heart, Filter, SortAsc, Trash } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { BookList } from '../components/BookList';
@@ -15,8 +15,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   const { user } = useAuth();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!user) {
       window.location.href = '/login';
     } else {
       fetchFavorites();
@@ -68,6 +67,16 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   }, [favorites, sortBy, filterBy]);
 
   const categories = ['all', ...new Set(favorites.map((book) => book.category?.toLowerCase()))];
+
+  const deleteFavorite = async (bookId) => {
+    try {
+      await axiosInstance.delete(`${api}/book/favorites/${bookId}`);
+      setFavorites((prevFavorites) => prevFavorites.filter((book) => book.id !== bookId));
+      setFilteredFavorites((prevFiltered) => prevFiltered.filter((book) => book.id !== bookId));
+    } catch (error) {
+      console.error('Failed to delete favorite:', error);
+    }
+  };
 
   if (!user) {
     return (
@@ -172,6 +181,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
               onBookClick={onBookClick}
               onLike={onLike}
               onFavorite={onFavorite}
+              onDelete={deleteFavorite} // Pass delete functionality
             />
           )}
         </>

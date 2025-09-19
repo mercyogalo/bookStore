@@ -40,7 +40,7 @@ export const AuthorDashboard = () => {
     fetchBooks();
   }, []);
 
-  console.log(bookForm);
+ 
 
 
   const handleSubmit = async (e) => {
@@ -71,7 +71,7 @@ export const AuthorDashboard = () => {
 
  
   const handleDelete = async (id) => {
-    console.log(id);
+   
     if (!window.confirm("Are you sure you want to delete this book?")) return;
 
     try {

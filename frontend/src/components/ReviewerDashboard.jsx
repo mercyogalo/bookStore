@@ -8,6 +8,7 @@ import api from '../Utils/Api';
 import { useToast } from '../hooks/use-toast';
 import axios from 'axios';
 import { Navbar } from './Navbar';
+import axiosInstance from '../Utils/axiosInstance';
 
 const socket = io("http://localhost:5000"); // connect to backend
 
@@ -22,9 +23,7 @@ export const ReviewerDashboard = () => {
   // 📌 Fetch all author books
   const fetchBooks = async () => {
     try {
-      const res = await axios.get(`${api}/book/trending`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosInstance.get(`${api}/book/trending`);
       const data = res.data
       setBooks(data);
       console.log(res);
@@ -36,9 +35,7 @@ export const ReviewerDashboard = () => {
   // 📌 Fetch reviews for a book
   const fetchReviews = async (bookId) => {
     try {
-      const res = await fetch(`${api}/reviews/${bookId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const res = await axiosInstance(`${api}/reviews/${bookId}`);
       const data = await res.json();
       setReviews(data);
     } catch (err) {

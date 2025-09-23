@@ -5,6 +5,7 @@ import { Skeleton } from "../components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
 import { Navbar } from '../components/Navbar';
+import axiosInstance from "../Utils/axiosInstance";
 
 export const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -13,21 +14,14 @@ export const Profile = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      navigate("/login");
-      return;
-    }
 
     const fetchProfile = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/auth/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await axiosInstance.get("/auth/profile");
 
         if (response.status === 401) {
           localStorage.removeItem("authToken");
-          navigate("/login");
+          navigate("/");
           return;
         }
 
@@ -35,11 +29,11 @@ export const Profile = () => {
           const data = await response.json();
           setProfile(data);
         } else {
-          navigate("/login");
+          navigate("/");
         }
       } catch (error) {
         toast({ title: "Failed to fetch profile", status: "error" });
-        navigate("/login");
+        navigate("/");
       } finally {
         setLoading(false);
       }

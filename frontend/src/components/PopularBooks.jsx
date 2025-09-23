@@ -4,6 +4,8 @@ import { TrendingUp, Award, Gem } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { BookList } from './BookList';
+import { Navbar } from './Navbar';
+import axiosInstance from '../Utils/axiosInstance';
 
 export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
   const [trendingBooks, setTrendingBooks] = useState([]);
@@ -14,9 +16,9 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
     const fetchBooks = async () => {
       try {
         const [trendingRes, topRatedRes, newestRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/books/trending'),
-          axios.get('http://localhost:5000/api/books/top-rated'),
-          axios.get('http://localhost:5000/api/books/newest'),
+          axiosInstance.get('/books/trending'),
+          axiosInstance.get('/books/top-rated'),
+          axiosInstance.get('/books/newest'),
         ]);
 
         setTrendingBooks(trendingRes.data);
@@ -32,6 +34,7 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
 
   return (
     <div className="space-y-10 w-full px-6">
+      <Navbar />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold">Popular Books</h1>
         <p className="text-muted-foreground">

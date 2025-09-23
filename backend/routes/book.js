@@ -100,73 +100,6 @@ router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res
 });
 
 
-// Featured Books = books with the most reviews
-router.get("/featured", protect,async (req, res) => {
-  try {
-    const books = await Review.aggregate([
-      {
-        $group: {
-          _id: "$bookId",
-          reviewCount: { $sum: 1 }
-        }
-      },
-      { $sort: { reviewCount: -1 } },
-      { $limit: 8 },
-      {
-        $lookup: {
-          from: "books",              // collection name in Mongo
-          localField: "_id",
-          foreignField: "_id",
-          as: "book"
-        }
-      },
-      { $unwind: "$book" },
-      {
-        $project: {
-          _id: "$book._id",
-          title: "$book.title",
-          author: "$book.author",
-          description: "$book.description",
-          coverImage: "$book.coverImage",
-          genre: "$book.genre",
-          createdAt: "$book.createdAt",
-          reviewCount: 1
-        }
-      }
-    ]);
-
-    res.json(books);
-  } catch (error) {
-    console.error("Error fetching featured books:", error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-// New Arrivals (latest createdAt)
-router.get("/newArrivals",protect, async (req, res) => {
-  try {
-    const books = await Book.find().sort({ createdAt: -1 }).limit(8);
-    res.json(books);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// Trending (most likes)
-router.get("/trending",protect,  async (req, res) => {
-  try {
-    const books = await Book.find().sort({ likeCount: -1 }).limit(8);
-    res.status(200).json(books);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-
 router.post("/:id/like", protect, async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -235,6 +168,72 @@ router.delete('/favorite/:bookId', protect, async(req,res)=>{
 
 })
 
+
+
+// Featured Books = books with the most reviews
+router.get("/featured", protect,async (req, res) => {
+  try {
+    const books = await Review.aggregate([
+      {
+        $group: {
+          _id: "$bookId",
+          reviewCount: { $sum: 1 }
+        }
+      },
+      { $sort: { reviewCount: -1 } },
+      { $limit: 8 },
+      {
+        $lookup: {
+          from: "books",              // collection name in Mongo
+          localField: "_id",
+          foreignField: "_id",
+          as: "book"
+        }
+      },
+      { $unwind: "$book" },
+      {
+        $project: {
+          _id: "$book._id",
+          title: "$book.title",
+          author: "$book.author",
+          description: "$book.description",
+          coverImage: "$book.coverImage",
+          genre: "$book.genre",
+          createdAt: "$book.createdAt",
+          reviewCount: 1
+        }
+      }
+    ]);
+
+    res.json(books);
+  } catch (error) {
+    console.error("Error fetching featured books:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+// New Arrivals (latest createdAt)
+router.get("/newArrivals",protect, async (req, res) => {
+  try {
+    const books = await Book.find().sort({ createdAt: -1 }).limit(8);
+    res.json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Trending (most likes)
+router.get("/trending",protect,  async (req, res) => {
+  try {
+    const books = await Book.find().sort({ likeCount: -1 }).limit(8);
+    res.status(200).json(books);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 

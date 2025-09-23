@@ -5,6 +5,7 @@ import { Button } from '../components/ui/button';
 import { BookList } from '../components/BookList';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../Utils/axiosInstance';
+import { Navbar } from '../components/Navbar';
 import api from '../Utils/Api';
 
 export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
@@ -16,7 +17,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
 
   useEffect(() => {
     if (!user) {
-      window.location.href = '/login';
+      window.location.href = '/';
     } else {
       fetchFavorites();
     }
@@ -25,8 +26,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   // Fetch favorites from backend
   const fetchFavorites = async () => {
     try {
-      const response = await axiosInstance.get(`${api}/book/favorites`);
-      // axios already parses JSON, so no need for response.json()
+      const response = await axiosInstance.get(`/book/favorites`);
       setFavorites(response.data);
       setFilteredFavorites(response.data);
     } catch (error) {

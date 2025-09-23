@@ -15,29 +15,25 @@ export const Profile = () => {
 
   useEffect(() => {
 
-    const fetchProfile = async () => {
-      try {
-        const response = await axiosInstance.get("/auth/profile");
+  const fetchProfile = async () => {
+  try {
+    const response = await axiosInstance.get("/auth/profile");
 
-        if (response.status === 401) {
-          localStorage.removeItem("authToken");
-          navigate("/");
-          return;
-        }
-
-        if (response.ok) {
-          const data = await response.json();
-          setProfile(data);
-        } else {
-          navigate("/");
-        }
-      } catch (error) {
-        toast({ title: "Failed to fetch profile", status: "error" });
-        navigate("/");
-      } finally {
-        setLoading(false);
-      }
-    };
+    if (response.status === 200) {
+      setProfile(response.data);  // Axios already parses JSON
+    } else if (response.status === 401) {
+      localStorage.removeItem("authToken");
+      navigate("/");
+    } else {
+      navigate("/");
+    }
+  } catch (error) {
+    toast({ title: "Failed to fetch profile", status: "error" });
+    navigate("/");
+  } finally {
+    setLoading(false);
+  }
+};
 
     fetchProfile();
   }, [navigate, toast]);

@@ -40,7 +40,6 @@ export function Navbar() {
   };
 
   const navItems = [
-    { name: 'Home', path: '/', icon: Home },
     { name: 'Popular', path: '/popular', icon: TrendingUp },
     { name: 'Favorites', path: '/favorites', icon: Heart },
     { name: 'Profile', path: '/profile', icon: User },

@@ -40,7 +40,8 @@ export function RegisterForm({ className, ...props }) {
       })
 
 
-      // Redirect based on role
+      localStorage.setItem("token",res.status.token);
+    
       if (res.data.role === "author") {
         navigate("/author-dashboard")
       } else if (res.data.role === "reviewer") {

@@ -7,19 +7,36 @@ import {
   SheetContent,
   SheetTrigger,
 } from '../components/ui/sheet';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
   const navigate = useNavigate();
 
-  const isAuthenticated = !!localStorage.getItem("token");
+  useEffect(() => {
+    setIsAuthenticated(!!localStorage.getItem("token"));
+  }, [location]);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAuthenticated(!!localStorage.getItem("token"));
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Cleanup listener on unmount
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
 
   const handleLogout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
-    navigate('/'); 
+    setIsAuthenticated(false);
+    navigate('/');
   };
 
   const navItems = [
@@ -105,7 +122,7 @@ export function Navbar() {
           <nav className="flex items-center space-x-2">
             <ThemeToggle />
             {!isAuthenticated ? (
-              <Link to="/login">
+              <Link to="/">
                 <Button variant="outline" size="sm">
                   <LogIn className="h-4 w-4 mr-2" />
                   Login

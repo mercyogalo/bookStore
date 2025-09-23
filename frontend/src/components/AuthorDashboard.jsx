@@ -8,8 +8,6 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { Link } from 'react-router-dom';
 import axiosInstance from '../Utils/axiosInstance';
-import axios from 'axios';
-import api from '../Utils/Api';
 import { Navbar } from './Navbar';
 
 export const AuthorDashboard = () => {
@@ -26,10 +24,12 @@ export const AuthorDashboard = () => {
     link: ''
   });
 
+
+ 
  
   const fetchBooks = async () => {
     try {
-      const res = await axiosInstance.get(`${api}/book/allBooks`);
+      const res = await axiosInstance.get(`/book/allBooks`);
       setBooks(res.data);
     } catch (error) {
       console.error("Error fetching books:", error.response?.data || error.message);
@@ -42,30 +42,42 @@ export const AuthorDashboard = () => {
 
  
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsUploading(true);
 
     try {
-      await axiosInstance.post(`${api}/book/createBook`, bookForm);
+      // Validate required fields
+      if (!bookForm.title || !bookForm.description || !bookForm.genre || !bookForm.author) {
+        alert('Please fill in all required fields.');
+        setIsUploading(false);
+        return;
+      }
 
-      setBookForm({
-        title: '',
-        description: '',
-        genre: '',
-        coverImage: '',
-        chapters: '',
-        author: '',
-        yearPublished: '',
-        link: ''
-      });
-
-      fetchBooks();
+      // Send POST request
+      const response = await axiosInstance.post(`/book/createBook`, bookForm);
+       alert(response.data);
+      if (response.status === 201) {
+        alert('Book created successfully!');
+        fetchBooks();
+      } else {
+        alert('Failed to create book. Please try again.');
+      }
     } catch (error) {
-      console.error("Error creating book:", error.response?.data || error.message);
+      console.error('Error creating book:', error.response?.data || error.message);
+      alert('An error occurred while creating the book. Please check the console for details.');
     } finally {
       setIsUploading(false);
+      setBookForm({
+          title: '',
+          description: '',
+          genre: '',
+          coverImage: '',
+          chapters: '',
+          author: '',
+          yearPublished: '',
+          link: ''
+        });
     }
   };
 
@@ -75,7 +87,7 @@ export const AuthorDashboard = () => {
     if (!window.confirm("Are you sure you want to delete this book?")) return;
 
     try {
-      await axiosInstance.delete(`${api}/book/deleteBook/${id}`);
+      await axiosInstance.delete(`/book/deleteBook/${id}`);
       fetchBooks();
     } catch (error) {
       console.error("Error deleting book:", error.response?.data || error.message);

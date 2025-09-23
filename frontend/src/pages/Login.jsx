@@ -28,6 +28,8 @@ export function LoginForm({ className, ...props }) {
         password,
       })
 
+      localStorage.setItem("token", res.data.token)
+
       if (res.data.role === "author") {
         navigate("/author-dashboard")
       } else if (res.data.role === "reviewer") {

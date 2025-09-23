@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import socket from "../Utils/socket";
 import { ReviewForm } from "../components/ReviewForm";
 import { ReviewCard } from "../components/ReviewCard";
+import axiosInstance from "../Utils/axiosInstance";
+import api from '../Utils/Api'
 
 export const BookPage = () => {
   const { id: bookId } = useParams();
@@ -13,13 +15,11 @@ export const BookPage = () => {
   // Fetch book + reviews
   useEffect(() => {
     const fetchData = async () => {
-      const bookRes = await fetch(`http://localhost:5000/api/book/${bookId}`);
+      const bookRes = await axiosInstance(`${api}/book/${bookId}`);
       const bookData = await bookRes.json();
       setBook(bookData);
 
-      const reviewRes = await fetch(`http://localhost:5000/api/reviews/${bookId}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
+      const reviewRes = await axiosInstance(`${api}/reviews/${bookId}`);
       const reviewData = await reviewRes.json();
       setReviews(reviewData);
       setReviewCount(reviewData.length);

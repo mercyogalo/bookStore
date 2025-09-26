@@ -4,13 +4,31 @@ import { Button } from './ui/button';
 import { Textarea } from './ui/textarea';
 import { Badge } from './ui/badge';
 import { io } from 'socket.io-client';
-import api from '../Utils/Api';
 import { useToast } from '../hooks/use-toast';
-import axios from 'axios';
 import { Navbar } from './Navbar';
 import axiosInstance from '../Utils/axiosInstance';
 
 const socket = io("http://localhost:5000"); // connect to backend
+
+const TruncatedDescription = ({ description }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (description.length <= 100) {
+    return <p className="text-sm text-muted-foreground mb-2">{description}</p>;
+  }
+
+  return (
+    <p className="text-sm text-muted-foreground mb-2">
+      {isExpanded ? description : `${description.slice(0, 100)}...`}
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="text-primary ml-2 underline"
+      >
+        {isExpanded ? 'Show Less' : 'More'}
+      </button>
+    </p>
+  );
+};
 
 export const ReviewerDashboard = () => {
   const [books, setBooks] = useState([]);
@@ -20,10 +38,11 @@ export const ReviewerDashboard = () => {
   const { toast } = useToast();
   const token = localStorage.getItem('token');
 
-  // 📌 Fetch all author books
+
+
   const fetchBooks = async () => {
     try {
-      const res = await axiosInstance.get(`${api}/book/trending`);
+      const res = await axiosInstance.get(`/book/trending`);
       const data = res.data
       setBooks(data);
       console.log(res);
@@ -32,10 +51,11 @@ export const ReviewerDashboard = () => {
     }
   };
 
-  // 📌 Fetch reviews for a book
+
+
   const fetchReviews = async (bookId) => {
     try {
-      const res = await axiosInstance(`${api}/reviews/${bookId}`);
+      const res = await axiosInstance(`/reviews/${bookId}`);
       const data = await res.json();
       setReviews(data);
     } catch (err) {
@@ -46,9 +66,10 @@ export const ReviewerDashboard = () => {
   useEffect(() => {
     fetchBooks();
 
-    // Listen for real-time reviews
+   
+
     socket.on("receiveReview", (review) => {
-      // Only add if it's for the currently selected book
+     
       if (selectedBook && review.bookId === selectedBook._id) {
         setReviews((prev) => [...prev, review]);
       }
@@ -73,7 +94,7 @@ export const ReviewerDashboard = () => {
       bookId: selectedBook._id,
       review: {
         content: reviewContent,
-        userId: "self", // backend should replace with logged-in user ID
+        userId: "self",
         userName: "You",
       }
     };
@@ -90,16 +111,20 @@ export const ReviewerDashboard = () => {
         <p className="text-muted-foreground">Read books and leave your reviews</p>
       </div>
 
-      {/* Book List */}
-      <div className="space-y-4">
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {books.map((book) => (
-          <Card key={book._id}>
-            <CardContent className="p-6 flex justify-between items-center">
-              <div>
-                <h3 className="text-lg font-semibold">{book.title}</h3>
-                <p className="text-sm text-muted-foreground">Author: {book.author}</p>
-                <Badge variant="default">{book.reviewCount || 0} Reviews</Badge>
-              </div>
+          <Card key={book._id} className="overflow-hidden">
+            <img
+              src={book.coverImage || 'https://via.placeholder.com/150'}
+              alt={book.title}
+              className="w-full h-64 object-cover"
+            />
+            <CardContent className="p-4">
+              <h3 className="text-lg font-semibold mb-2">{book.title}</h3>
+              <TruncatedDescription description={book.description} />
+              <p className="text-sm text-muted-foreground font-semibold mb-2">Author: {book.author}</p>
+              <Badge variant="default" className="mb-2">{book.reviewCount || 0} Reviews</Badge>
               <Button
                 size="sm"
                 onClick={() => handleSelectBook(book)}

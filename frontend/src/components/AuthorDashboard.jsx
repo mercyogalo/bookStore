@@ -184,9 +184,6 @@ export const AuthorDashboard = () => {
                           <Trash2 className="h-4 w-4 mr-2" /> Delete
                         </Button>
                         <Button variant="outline" size="sm">
-                          <Eye className="h-4 w-4 mr-2" /> View
-                        </Button>
-                        <Button variant="outline" size="sm">
                           <BarChart3 className="h-4 w-4 mr-2" /> Analytics
                         </Button>
                       </div>

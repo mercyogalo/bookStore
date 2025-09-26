@@ -1,15 +1,16 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Book = require("../models/Books");
-const Review= require("../models/Review");
-const Favorite=require('../models/Favorite');
-const User= require("../models/User");
+const Review = require("../models/Review");
+const Favorite = require('../models/Favorite');
+const User = require("../models/User");
 const router = express.Router();
 const protect = require("../middlewares/auth");
 const checkRole = require("../middlewares/role");
 
 
 router.post('/createBook', protect, checkRole(["author"]), async (req, res) => {
-  const { title, author, yearPublished,link, description, coverImage, genre, chapters } = req.body;
+  const { title, author, yearPublished, link, description, coverImage, genre, chapters } = req.body;
   try {
     if (!title || !author || !link || !description) {
       return res.status(400).json({ message: "Please enter all required fields" });
@@ -34,7 +35,7 @@ router.post('/createBook', protect, checkRole(["author"]), async (req, res) => {
   }
 });
 
-// Get all Books of a specific author
+
 router.get('/allBooks', protect, checkRole(["author"]), async (req, res) => {
   try {
     const books = await Book.find();
@@ -44,147 +45,19 @@ router.get('/allBooks', protect, checkRole(["author"]), async (req, res) => {
     res.status(500).json({ message: "Server error kindly try again" });
   }
 });
-//Get specific book
-router.get('/:id', protect, async(req,res)=>{
-  try {
-    const book=await Book.findById(req.params.id);
-    res.status(200).json(book);
-  } catch (error) {
-      console.error("The error is:",error);
-      res.status(500).json({message:"Server error kindly try again"});
-  }
-})
-// Update Book of a specific author
-router.put('/updateBook/:id', protect, checkRole(["author"]), async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
-
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-
-    if (req.user.role === "author" && book.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "You can only update your own books" });
-    }
-
-    Object.assign(book, req.body);
-    const updatedBook = await book.save();
-
-    res.status(200).json({ message: "Book details updated successfully", updatedBook });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error try again" });
-  }
-});
-
-// Delete Book of a specific author
-router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
-
-    if (!book) {
-      return res.status(404).json({ message: "Book not found" });
-    }
-
-    if (req.user.role === "author" && book.createdBy.toString() !== req.user._id.toString()) {
-      return res.status(403).json({ message: "You can only delete your own books" });
-    }
-
-    await book.deleteOne();
-
-    res.status(200).json({ message: "Book deleted successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error try again" });
-  }
-});
-
-
-router.post("/:id/like", protect, async (req, res) => {
-  try {
-    const book = await Book.findById(req.params.id);
-    if (!book) return res.status(404).json({ message: "Book not found" });
-
-    const userId = req.user._id;
-    const alreadyLiked = book.likes.includes(userId);
-
-    if (alreadyLiked) {
-      book.likes.pull(userId); // unlike
-    } else {
-      book.likes.push(userId); // like
-    }
-
-    book.likeCount = book.likes.length;
-    await book.save();
-
-    res.json({ message: alreadyLiked ? "Unliked" : "Liked", book });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-//add book to favorite
-router.post('/favorite/:bookId', protect, async(req, res)=>{
-    try {
-       const favorite=await Favorite.create({
-        user:req.user._id,
-        book:req.params.bookId
-       });
-       res.status(200).json({message:"Successfully favorite this book"});
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({message:"Server error kindly try again"});
-    }
-})
-
-//get all favorites in the favorites page
-router.get('/favorites', protect, async (req,res)=>{
-    try {
-        const favorites=await Favorite.find({user:req.user._id}).populate("book");
-        res.status(200).json(favorites)
-    } catch (error) {
-        if(error.code===11000){
-            return res.status(400).json({ message: "Book already in favorites" })
-        }
-        console.error(error);
-        res.status(500).json({message:"Server error kindly try again"});
-    }
-})
-
-//remove/delete from favorite
-router.delete('/favorite/:bookId', protect, async(req,res)=>{
-    try {
-       await Favorite.findOneAndDelete({
-        user:req.user._id,
-        book:req.params.bookId
-       });
-        res.status(200).json({message:"Book removed from favorites successfully"});
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({message:"Server error kindly try again"})
-    }
-
-})
 
 
 
-// Featured Books = books with the most reviews
-router.get("/featured", protect,async (req, res) => {
+
+router.get("/featured", protect, async (req, res) => {
   try {
     const books = await Review.aggregate([
-      {
-        $group: {
-          _id: "$bookId",
-          reviewCount: { $sum: 1 }
-        }
-      },
+      { $group: { _id: "$bookId", reviewCount: { $sum: 1 } } },
       { $sort: { reviewCount: -1 } },
       { $limit: 8 },
       {
         $lookup: {
-          from: "books",              // collection name in Mongo
+          from: "books",
           localField: "_id",
           foreignField: "_id",
           as: "book"
@@ -212,9 +85,8 @@ router.get("/featured", protect,async (req, res) => {
   }
 });
 
-
 // New Arrivals (latest createdAt)
-router.get("/newArrivals",protect, async (req, res) => {
+router.get("/newArrivals", protect, async (req, res) => {
   try {
     const books = await Book.find().sort({ createdAt: -1 }).limit(8);
     res.json(books);
@@ -225,7 +97,7 @@ router.get("/newArrivals",protect, async (req, res) => {
 });
 
 // Trending (most likes)
-router.get("/trending",protect,  async (req, res) => {
+router.get("/trending", protect, async (req, res) => {
   try {
     const books = await Book.find().sort({ likeCount: -1 }).limit(8);
     res.status(200).json(books);
@@ -236,5 +108,141 @@ router.get("/trending",protect,  async (req, res) => {
 });
 
 
+router.post('/favorite/:bookId', protect, async (req, res) => {
+  try {
+    const favorite = await Favorite.create({
+      user: req.user._id,
+      book: req.params.bookId
+    });
+    res.status(200).json({ message: "Successfully favorited this book" });
+  } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({ message: "Book already in favorites" });
+    }
+    console.error(error);
+    res.status(500).json({ message: "Server error kindly try again" });
+  }
+});
+
+router.get('/favorites', protect, async (req, res) => {
+  try {
+    const favorites = await Favorite.find({ user: req.user._id }).populate("book");
+    res.status(200).json(favorites);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error kindly try again" });
+  }
+});
+
+router.delete('/favorite/:bookId', protect, async (req, res) => {
+  try {
+    await Favorite.findOneAndDelete({
+      user: req.user._id,
+      book: req.params.bookId
+    });
+    res.status(200).json({ message: "Book removed from favorites successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error kindly try again" });
+  }
+});
+
+
+
+router.post("/:id/like", protect, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid book ID" });
+    }
+
+    const book = await Book.findById(req.params.id);
+    if (!book) return res.status(404).json({ message: "Book not found" });
+
+    const userId = req.user._id;
+    const alreadyLiked = book.likes.includes(userId);
+
+    if (alreadyLiked) {
+      book.likes.pull(userId);
+    } else {
+      book.likes.push(userId);
+    }
+
+    book.likeCount = book.likes.length;
+    await book.save();
+
+    res.json({ message: alreadyLiked ? "Unliked" : "Liked", book });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+router.get('/:id', protect, async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid book ID" });
+    }
+
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    res.status(200).json(book);
+  } catch (error) {
+    console.error("The error is:", error);
+    res.status(500).json({ message: "Server error kindly try again" });
+  }
+});
+
+
+router.put('/updateBook/:id', protect, checkRole(["author"]), async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid book ID" });
+    }
+
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    if (req.user.role === "author" && book.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You can only update your own books" });
+    }
+
+    Object.assign(book, req.body);
+    const updatedBook = await book.save();
+
+    res.status(200).json({ message: "Book details updated successfully", updatedBook });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error try again" });
+  }
+});
+
+router.delete('/deleteBook/:id', protect, checkRole(["author"]), async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ message: "Invalid book ID" });
+    }
+
+    const book = await Book.findById(req.params.id);
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+
+    if (req.user.role === "author" && book.createdBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "You can only delete your own books" });
+    }
+
+    await book.deleteOne();
+    res.status(200).json({ message: "Book deleted successfully" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error try again" });
+  }
+});
 
 module.exports = router;

@@ -134,7 +134,7 @@ router.get('/favorites', protect, async (req, res) => {
   }
 });
 
-router.delete('/favorite/:bookId', protect, async (req, res) => {
+router.delete('/unfavorite/:bookId', protect, async (req, res) => {
   try {
     await Favorite.findOneAndDelete({
       user: req.user._id,

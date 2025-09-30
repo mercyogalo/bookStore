@@ -29,6 +29,7 @@ export function LoginForm({ className, ...props }) {
       })
 
       localStorage.setItem("token", res.data.token)
+      localStorage.setItem("role",res.status.role);
 
       if (res.data.role === "author") {
         navigate("/author-dashboard")

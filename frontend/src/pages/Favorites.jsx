@@ -3,29 +3,22 @@ import { Heart } from 'lucide-react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { BookList } from '../components/BookList';
-import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../Utils/axiosInstance';
 import { Navbar } from '../components/Navbar';
-import api from '../Utils/Api';
+
 
 export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
   const [favorites, setFavorites] = useState([]);
   const [filteredFavorites, setFilteredFavorites] = useState([]);
-  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user) {
-      window.location.href = '/';
-    } else {
-      fetchFavorites();
-    }
-  }, []);
 
+ 
   // Fetch favorites from backend
   const fetchFavorites = async () => {
     try {
       const response = await axiosInstance.get(`/book/favorites`);
       setFavorites(response.data);
+      console.log(response.data);
       setFilteredFavorites(response.data);
     } catch (error) {
       console.error('Failed to fetch favorites:', error);
@@ -34,7 +27,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
 
   const deleteFavorite = async (bookId) => {
     try {
-      await axiosInstance.delete(`${api}/book/favorites/${bookId}`);
+      await axiosInstance.delete(`/book/favorites/${bookId}`);
       setFavorites((prevFavorites) => prevFavorites.filter((book) => book.id !== bookId));
       setFilteredFavorites((prevFiltered) => prevFiltered.filter((book) => book.id !== bookId));
     } catch (error) {
@@ -42,20 +35,10 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
     }
   };
 
-  if (!user) {
-    return (
-      <div className="text-center py-12">
-        <Heart className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-        <h2 className="text-2xl font-bold mb-2">Sign In to View Favorites</h2>
-        <p className="text-muted-foreground">
-          Create an account to save your favorite books and access them anytime.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-6">
+      <Navbar />
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold flex items-center justify-center space-x-2">
           <Heart className="h-8 w-8 text-red-500" />

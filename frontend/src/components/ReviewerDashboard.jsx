@@ -7,6 +7,7 @@ import { io } from 'socket.io-client';
 import { useToast } from '../hooks/use-toast';
 import { Navbar } from './Navbar';
 import axiosInstance from '../Utils/axiosInstance';
+import { Heart, Star } from 'lucide-react';
 
 const socket = io("http://localhost:5000"); // connect to backend
 
@@ -103,6 +104,44 @@ export const ReviewerDashboard = () => {
     setReviewContent('');
   };
 
+  const handleLikeToggle = async (bookId, isLiked) => {
+    try {
+      const endpoint = isLiked ? `/book/unlike/${bookId}` : `/book/like/${bookId}`;
+      const response = await axiosInstance.post(endpoint);
+
+      if (response.status === 200) {
+        setBooks((prevBooks) =>
+          prevBooks.map((book) =>
+            book._id === bookId
+              ? { ...book, isLiked: !isLiked, likeCount: book.likeCount + (isLiked ? -1 : 1) }
+              : book
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to toggle like:', error);
+    }
+  };
+
+  const handleFavoriteToggle = async (bookId, isFavorited, setBooks) => {
+    try {
+      const endpoint = isFavorited ? `/book/unfavorite/${bookId}` : `/book/favorite/${bookId}`;
+      const response = await axiosInstance.post(endpoint);
+
+      if (response.status === 200) {
+        setBooks((prevBooks) =>
+          prevBooks.map((book) =>
+            book._id === bookId
+              ? { ...book, isFavorited: !isFavorited }
+              : book
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to toggle favorite:', error);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Navbar />
@@ -110,7 +149,6 @@ export const ReviewerDashboard = () => {
         <h1 className="text-3xl font-bold">Reviewer Dashboard</h1>
         <p className="text-muted-foreground">Read books and leave your reviews</p>
       </div>
-
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {books.map((book) => (
@@ -125,13 +163,32 @@ export const ReviewerDashboard = () => {
               <TruncatedDescription description={book.description} />
               <p className="text-sm text-muted-foreground font-semibold mb-2">Author: {book.author}</p>
               <Badge variant="default" className="mb-2">{book.reviewCount || 0} Reviews</Badge>
-              <Button
-                size="sm"
-                onClick={() => handleSelectBook(book)}
-                disabled={selectedBook && selectedBook._id === book._id}
-              >
-                Review
-              </Button>
+              <div className="flex items-center justify-between space-x-4 mb-2">
+                <div className="flex items-center space-x-4">
+                  <button
+                    onClick={() => handleLikeToggle(book._id, book.isLiked, setBooks)}
+                    className={`flex items-center space-x-1 ${book.isLiked ? 'text-red-500' : 'text-gray-800 hover:text-gray-600'}`}
+                  >
+                    <Heart className="h-5 w-5" />
+                    <span>{book.likeCount}</span>
+                  </button>
+                  <button
+                    onClick={() => handleFavoriteToggle(book._id, book.isFavorited, setBooks)}
+                    className={`flex items-center space-x-1 ${book.isFavorited ? 'text-yellow-500' : 'text-gray-800 hover:text-gray-600'}`}
+                  >
+                    <Star className="h-5 w-5" />
+                    <span>Favorite</span>
+                  </button>
+                </div>
+                <Button
+                  size="sm"
+                  onClick={() => handleSelectBook(book)}
+                  disabled={selectedBook && selectedBook._id === book._id}
+                  className="bg-blue-500 text-white hover:bg-blue-600"
+                >
+                  Review
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}

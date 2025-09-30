@@ -41,6 +41,7 @@ export function RegisterForm({ className, ...props }) {
 
 
       localStorage.setItem("token",res.status.token);
+      localStorage.setItem("role",res.status.role);
     
       if (res.data.role === "author") {
         navigate("/author-dashboard")

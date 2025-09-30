@@ -1,49 +1,40 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Book, Heart, Home, TrendingUp, User, LogIn, Menu, LogOut } from 'lucide-react';
-import { Button } from '../components/ui/button';
-import { ThemeToggle } from './ThemeToggle';
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from '../components/ui/sheet';
-import { useState, useEffect } from 'react';
+  Book,
+  Heart,
+  TrendingUp,
+  User,
+  LogIn,
+  Menu,
+  LogOut,
+} from "lucide-react";
+import { Button } from "../components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
+import { Sheet, SheetContent, SheetTrigger } from "../components/ui/sheet";
+import { useState } from "react";
+import { useAuth } from "../context/AuthContext";
 
 export function Navbar() {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem("token"));
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useAuth();
 
-  useEffect(() => {
-    setIsAuthenticated(!!localStorage.getItem("token"));
-  }, [location]);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setIsAuthenticated(!!localStorage.getItem("token"));
-    };
-
-    window.addEventListener("storage", handleStorageChange);
-
-    // Cleanup listener on unmount
-    return () => {
-      window.removeEventListener("storage", handleStorageChange);
-    };
-  }, []);
-
-  const handleLogout = (e) => {
-    e.preventDefault();
-    localStorage.removeItem("token");
-    setIsAuthenticated(false);
-    navigate('/');
-  };
+  // Role-based navigation
+  const roleBasedLinks =
+    user?.role === "author"
+      ? [{ name: "Author Dashboard", path: "/author-dashboard", icon: Book }]
+      : user?.role === "reviewer"
+      ? [{ name: "Reviewer Dashboard", path: "/reviewer-dashboard", icon: Book }]
+      : [];
 
   const navItems = [
-    { name: 'Popular', path: '/popular', icon: TrendingUp },
-    { name: 'Favorites', path: '/favorites', icon: Heart },
-    { name: 'Profile', path: '/profile', icon: User },
+    { name: "Popular", path: "/popular", icon: TrendingUp },
+    { name: "Favorites", path: "/favorites", icon: Heart },
+    { name: "Profile", path: "/profile", icon: User },
+    ...roleBasedLinks,
   ];
+
 
   const NavLinks = ({ mobile = false }) => (
     <>
@@ -57,9 +48,9 @@ export function Navbar() {
             to={item.path}
             className={`flex items-center space-x-2 px-3 py-2 rounded-md transition-colors ${
               isActive
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-            } ${mobile ? 'w-full' : ''}`}
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted"
+            } ${mobile ? "w-full" : ""}`}
             onClick={() => mobile && setIsOpen(false)}
           >
             <Icon className="h-4 w-4" />
@@ -84,7 +75,7 @@ export function Navbar() {
           </nav>
         </div>
 
-        {/* Mobile Navigation */}
+      
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
@@ -110,7 +101,7 @@ export function Navbar() {
           </SheetContent>
         </Sheet>
 
-        {/* Right side */}
+     
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <div className="w-full flex-1 md:w-auto md:flex-none">
             <Link to="/" className="flex items-center space-x-2 md:hidden">
@@ -121,14 +112,22 @@ export function Navbar() {
           <nav className="flex items-center space-x-2">
             <ThemeToggle />
             {!isAuthenticated ? (
-              <Link to="/">
+              <Link to="/login">
                 <Button variant="outline" size="sm">
                   <LogIn className="h-4 w-4 mr-2" />
                   Login
                 </Button>
               </Link>
             ) : (
-              <Button variant="outline" size="sm" onClick={handleLogout}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  logout();
+                  navigate("/");
+                }}
+              >
                 <LogOut className="h-4 w-4 mr-2" />
                 Logout
               </Button>

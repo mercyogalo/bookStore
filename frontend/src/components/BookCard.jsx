@@ -12,32 +12,41 @@ export function BookCard({ book }) {
   const [isFavorited, setIsFavorited] = useState(book.isFavorited || false);
 
   return (
-    <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300">
+    <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300 ">
       <div className="aspect-[3/4] relative overflow-hidden">
         <img
-          src={book.cover || 'https://images.pexels.com/photos/1130980/pexels-photo-1130980.jpeg'}
+          src={
+            book.coverImage ||
+            'https://images.pexels.com/photos/1130980/pexels-photo-1130980.jpeg'
+          }
           alt={book.title}
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center space-x-2">
-          <Link to={`/book/${book.id}`}>
+        
+          <Link to={`/bookPage/${book._id}`}>
             <Button size="sm" variant="secondary">
-              <Eye className="h-4 w-4 mr-1" />
+              <Eye className="h-4 w-4 mr-1 text-foreground" />
               View
             </Button>
           </Link>
-          <FavoriteButton 
-            bookId={book.id} 
+          <LikeButton
+            bookId={book._id}
+            isLiked={isLiked}
+            onToggle={setIsLiked}
+          />
+          <FavoriteButton
+            bookId={book._id}
             isFavorited={isFavorited}
             onToggle={setIsFavorited}
           />
         </div>
       </div>
-      
+
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
-            <Link to={`/book/${book.id}`}>
+            <Link to={`/books/${book._id}`}>
               <h3 className="font-semibold text-sm hover:text-primary transition-colors line-clamp-2">
                 {book.title}
               </h3>
@@ -71,13 +80,6 @@ export function BookCard({ book }) {
               <span>{book.reviewCount || 0}</span>
             </div>
           </div>
-          
-          <LikeButton 
-            bookId={book.id}
-            initialCount={book.likes || 0}
-            isLiked={isLiked}
-            onToggle={setIsLiked}
-          />
         </div>
       </CardContent>
     </Card>

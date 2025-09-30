@@ -30,7 +30,7 @@ function App() {
                 <Route path="/popular" element={<Popular />} />
                 <Route path="/favorites" element={<Favorites />} />
                 <Route path="/profile" element={<Profile />} />
-                <Route path="/book/:id" element={<BookPage />} />
+                <Route path="/bookPage/:id" element={<BookPage />} />
                 <Route path="/update-book/:id" element={<UpdateBookPage />} />
                 <Route path="/signup" element={<Signup />} />
                 <Route path="/reviewer-dashboard" element={<ReviewerDashboard />} />

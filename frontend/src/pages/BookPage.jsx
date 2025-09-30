@@ -5,6 +5,7 @@ import { ReviewForm } from "../components/ReviewForm";
 import { ReviewCard } from "../components/ReviewCard";
 import axiosInstance from "../Utils/axiosInstance";
 import api from '../Utils/Api'
+import { Card, CardContent } from '../components/ui/card';
 
 export const BookPage = () => {
   const { id: bookId } = useParams();
@@ -73,24 +74,33 @@ export const BookPage = () => {
   };
 
   return (
-    <div>
+    <div className="container mx-auto py-8">
       {book && (
-        <>
-          <h1>{book.title}</h1>
-          <p>by {book.author}</p>
-          <p>{reviewCount} Reviews</p>
-        </>
+        <Card className="mb-8">
+          <img src={book.cover} alt={book.title} className="w-full h-64 object-cover" />
+          <CardContent>
+            <h1 className="text-2xl font-bold mb-4">{book.title}</h1>
+            <p className="text-muted-foreground mb-4">by {book.author}</p>
+            <p>{book.description}</p>
+          </CardContent>
+        </Card>
       )}
 
-      <ReviewForm onSubmit={handleSubmitReview} />
-
-      {reviews.map((review) => (
-        <ReviewCard
-          key={review._id}
-          review={review}
-          onDelete={handleDeleteReview}
-        />
-      ))}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">Reviews</h2>
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <Card key={review._id} className="mb-4">
+              <CardContent>
+                <p>{review.content}</p>
+                <p className="text-sm text-muted-foreground">- {review.userName}</p>
+              </CardContent>
+            </Card>
+          ))
+        ) : (
+          <p>No reviews yet.</p>
+        )}
+      </div>
     </div>
   );
 };

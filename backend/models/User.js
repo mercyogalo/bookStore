@@ -20,8 +20,8 @@ const userSchema=new mongoose.Schema({
         type:String,
         enum:["reviewer", "author", "admin"],
         default:"reviewer"
-    }
-
+    },
+    avatar:String
 }, {timestamps:true})
 
 userSchema.pre("save", async function(next){

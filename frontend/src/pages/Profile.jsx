@@ -18,15 +18,8 @@ export const Profile = () => {
   const fetchProfile = async () => {
   try {
     const response = await axiosInstance.get("/auth/profile");
-
-    if (response.status === 200) {
-      setProfile(response.data);  // Axios already parses JSON
-    } else if (response.status === 401) {
-      localStorage.removeItem("authToken");
-      navigate("/");
-    } else {
-      navigate("/");
-    }
+    setProfile(response.data);
+    console.log(profile);
   } catch (error) {
     toast({ title: "Failed to fetch profile", status: "error" });
     navigate("/");
@@ -75,6 +68,9 @@ export const Profile = () => {
           <CardContent className="text-gray-600 space-y-1">
             <p>
               <span className="font-medium">Name:</span> {profile.name}
+            </p>
+             <p>
+              <span className="font-medium">Username:</span> {profile.username}
             </p>
             <p>
               <span className="font-medium">Email:</span> {profile.email}

@@ -3,12 +3,13 @@ const User = require("../models/User");
 const router = express.Router();
 const generateToken = require("../Utils/token");
 const protect = require("../middlewares/auth");
+const upload=require("../middlewares/upload");
 
 
-router.post("/register", async (req, res) => {
-  const { name, email, role, password } = req.body;
+router.post("/register", upload.single("avatar"), async (req, res) => {
+  const { name, email, role, password, username } = req.body;
   try {
-    if (!name || !password || !email || !role) {
+    if (!name || !password || !email || !role || !username) {
       return res.status(400).json({ message: "Please enter all fields" });
     }
 
@@ -17,13 +18,24 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ message: "This user already exists" });
     }
 
-    const user = await User.create({ name, email, role, password });
+    // Save avatar in /api/uploads
+    const avatar = req.file ? `/api/uploads/${req.file.filename}` : null;
+
+    const user = await User.create({ 
+      name, 
+      username, 
+      email, 
+      role, 
+      password, 
+      avatar 
+    });
 
     res.status(201).json({
       userID: user._id,
-      username: user.name,
+      username: user.username,
       email: user.email,
       role: user.role,
+      avatar: user.avatar,
       token: generateToken(user), 
     });
   } catch (error) {
@@ -31,6 +43,9 @@ router.post("/register", async (req, res) => {
     return res.status(500).json({ message: "Server error in signup" });
   }
 });
+
+
+
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
@@ -50,6 +65,7 @@ router.post("/login", async (req, res) => {
       username: user.name,
       email: user.email,
       role: user.role,
+      avatar:user.avatar,
       token: generateToken(user),
     });
   } catch (error) {
@@ -66,6 +82,7 @@ router.get("/profile", protect, async (req, res) => {
       username: req.user.name,
       email: req.user.email,
       role: req.user.role,
+      avatar:req.user.avatar,
       createdAt: req.user.createdAt,
     });
   } catch (error) {

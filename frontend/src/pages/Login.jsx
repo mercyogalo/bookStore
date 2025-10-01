@@ -23,7 +23,7 @@ export function LoginForm({ className, ...props }) {
     setError("")
 
     try {
-      const res = await axios.post(`${api}/auth/login`, {
+      const res = await axiosInstance.post(`/auth/login`, {
         email,
         password,
       })

@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import socket from "@/Utils/socket";
-import api from "@/Utils/Api";
-import { ReviewForm } from "../components/ReviewForm";
+import socket from "../Utils/socket";
+import axiosInstance from "../Utils/axiosInstance";
 import { ReviewCard } from "../components/ReviewCard";
 
 export default function BookDetail() {
@@ -13,7 +12,7 @@ export default function BookDetail() {
     // 1. Fetch initial reviews from REST
     const fetchReviews = async () => {
       try {
-        const res = await api.get(`/reviews/${bookId}`);
+        const res = await axiosInstance.get(`/reviews/${bookId}`);
         setReviews(res.data || []);
       } catch (err) {
         console.error("Failed to load reviews", err);

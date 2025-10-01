@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import socket from "../Utils/socket";
-import { ReviewForm } from "../components/ReviewForm";
+import  ReviewForm from "../components/ReviewForm";
 import { ReviewCard } from "../components/ReviewCard";
 import axiosInstance from "../Utils/axiosInstance";
 import { Card, CardContent } from '../components/ui/card';

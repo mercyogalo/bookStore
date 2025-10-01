@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const http = require("http");
 const { Server } = require("socket.io");
+const path=require("path");
 
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
@@ -12,6 +13,7 @@ const reviewRoutes = require("./routes/review");
 dotenv.config();
 
 const app = express();
+
 const server = http.createServer(app); 
 const io = new Server(server, {
   cors: {
@@ -34,6 +36,7 @@ const PORT = process.env.PORT || 5000;
 app.use('/api/auth', authRoutes);
 app.use('/api/book', bookRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Connect to MongoDB
 mongoose

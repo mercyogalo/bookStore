@@ -35,11 +35,11 @@ export function BookCard({ book }) {
             isLiked={isLiked}
             onToggle={setIsLiked}
           />
-          <FavoriteButton
-            bookId={book._id}
-            isFavorited={isFavorited}
-            onToggle={setIsFavorited}
+         <FavoriteButton 
+         bookId={book._id} 
+         isFavorited={book.isFavorited || false}
           />
+
         </div>
       </div>
 

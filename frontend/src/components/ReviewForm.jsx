@@ -18,6 +18,7 @@ export const ReviewForm = ({ onSubmit, isSubmitting = false }) => {
     onSubmit({ content: content.trim(), rating });
     setContent('');
     setRating(5);
+    
   };
 
   const renderStars = () => {
@@ -50,22 +51,21 @@ export const ReviewForm = ({ onSubmit, isSubmitting = false }) => {
   }
 
   return (
-    <Card>
-      <CardHeader className="pb-4">
-        <CardTitle className="text-lg">Write a Review</CardTitle>
+    <Card className="mr-2 ml-2">
+      <CardHeader className="pb-3">
+        <CardTitle className="text-lg">Add a Review</CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex items-center space-x-3">
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.charAt(0).toUpperCase()}</AvatarFallback>
-            </Avatar>
+          <Avatar className="h-10 w-10">
+          {user.coverImage && <AvatarImage src={user.coverImage} alt={user.username} />}
+                <AvatarFallback>
+        {user?.username ? user.username.charAt(0).toUpperCase() : "?"}
+      </AvatarFallback>
+        </Avatar>
             <div>
-              <p className="font-semibold text-sm">{user.name}</p>
-              <div className="flex items-center space-x-1 mt-1">
-                {renderStars()}
-              </div>
+              <p className="font-semibold text-sm">{user.username}</p>
             </div>
           </div>
           

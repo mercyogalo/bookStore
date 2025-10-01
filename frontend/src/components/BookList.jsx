@@ -16,7 +16,7 @@ export function BookList({ books, title, className = "" }) {
       )}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {books.map((book) => (
-          <BookCard key={book.id} book={book} />
+          <BookCard key={book._id} book={book} />
         ))}
       </div>
     </div>

@@ -29,10 +29,11 @@ export function Navbar() {
       : [];
 
   const navItems = [
+    ...roleBasedLinks,
     { name: "Popular", path: "/popular", icon: TrendingUp },
     { name: "Favorites", path: "/favorites", icon: Heart },
     { name: "Profile", path: "/profile", icon: User },
-    ...roleBasedLinks,
+    
   ];
 
 

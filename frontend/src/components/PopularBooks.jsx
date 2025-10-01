@@ -15,15 +15,15 @@ export const PopularBooks = ({ onBookClick, onLike, onFavorite }) => {
   useEffect(() => {
     const fetchBooks = async () => {
       try {
-        const [trendingRes, topRatedRes, newestRes] = await Promise.all([
-          axiosInstance.get('/books/trending'),
-          axiosInstance.get('/books/top-rated'),
-          axiosInstance.get('/books/newest'),
+        const [trendingRes, featuredRes, newArrivals] = await Promise.all([
+          axiosInstance.get('/book/trending'),
+          axiosInstance.get('/book/featured'),
+          axiosInstance.get('/book/newArrivals'),
         ]);
 
         setTrendingBooks(trendingRes.data);
-        setTopRatedBooks(topRatedRes.data);
-        setHiddenGems(newestRes.data);
+        setTopRatedBooks(featuredRes.data);
+        setHiddenGems(newArrivals.data);
       } catch (error) {
         console.error('Error fetching books:', error);
       }

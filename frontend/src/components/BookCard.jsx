@@ -46,7 +46,7 @@ export function BookCard({ book }) {
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-2">
           <div className="flex-1">
-            <Link to={`/books/${book._id}`}>
+            <Link to={`/bookPage/${book._id}`}>
               <h3 className="font-semibold text-sm hover:text-primary transition-colors line-clamp-2">
                 {book.title}
               </h3>

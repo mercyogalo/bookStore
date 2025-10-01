@@ -3,7 +3,8 @@ import { io } from "socket.io-client";
 import { useToast } from "../hooks/use-toast";
 import { Navbar } from "./Navbar";
 import axiosInstance from "../Utils/axiosInstance";
-import { BookCard } from "./BookCard"; // 
+import { BookCard } from "./BookCard"; 
+
 
 const socket = io("http://localhost:5000"); // connect to backend
 
@@ -15,7 +16,6 @@ export const ReviewerDashboard = () => {
     try {
       const res = await axiosInstance.get(`/book/trending`);
       const data = res.data;
-      console.log(data);
       setBooks(data);
     } catch (err) {
       console.error("Error fetching books:", err);

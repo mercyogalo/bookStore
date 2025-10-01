@@ -1,94 +1,63 @@
-import { useState } from 'react';
-import { Star, Send } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Textarea } from '../components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '../components/ui/avatar';
-import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import socket from "@/Utils/socket";
+import api from "@/Utils/Api";
+import { ReviewForm } from "../components/ReviewForm";
+import { ReviewCard } from "../components/ReviewCard";
 
-export const ReviewForm = ({ onSubmit, isSubmitting = false }) => {
-  const [content, setContent] = useState('');
-  const [rating, setRating] = useState(5);
-  const { user } = useAuth();
+export default function BookDetail() {
+  const { id: bookId } = useParams(); // URL param for book ID
+  const [reviews, setReviews] = useState([]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!content.trim()) return;
-    
-    onSubmit({ content: content.trim(), rating });
-    setContent('');
-    setRating(5);
-    
-  };
+  useEffect(() => {
+    // 1. Fetch initial reviews from REST
+    const fetchReviews = async () => {
+      try {
+        const res = await api.get(`/reviews/${bookId}`);
+        setReviews(res.data || []);
+      } catch (err) {
+        console.error("Failed to load reviews", err);
+      }
+    };
+    fetchReviews();
 
-  const renderStars = () => {
-    return Array.from({ length: 5 }, (_, i) => (
-      <button
-        key={i}
-        type="button"
-        onClick={() => setRating(i + 1)}
-        className="focus:outline-none transition-colors"
-      >
-        <Star
-          className={`h-5 w-5 ${
-            i < rating ? 'fill-yellow-400 text-yellow-400 hover:fill-yellow-300' : 'text-muted-foreground hover:text-yellow-300'
-          }`}
-        />
-      </button>
-    ));
-  };
+    // 2. Join book socket room
+    socket.emit("joinBook", bookId);
 
-  if (!user) {
-    return (
-      <Card>
-        <CardContent className="pt-6">
-          <p className="text-center text-muted-foreground">
-            Please sign in to write a review.
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+    // 3. Listen for new reviews
+    socket.on("receiveReview", (newReview) => {
+      setReviews((prev) => [newReview, ...prev]);
+    });
+
+    // 4. Listen for deleted reviews
+    socket.on("reviewDeleted", ({ reviewId }) => {
+      setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+    });
+
+    // Cleanup when leaving the page
+    return () => {
+      socket.off("receiveReview");
+      socket.off("reviewDeleted");
+    };
+  }, [bookId]);
 
   return (
-    <Card className="mr-2 ml-2">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-lg">Add a Review</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex items-center space-x-3">
-          <Avatar className="h-10 w-10">
-          {user.coverImage && <AvatarImage src={user.coverImage} alt={user.username} />}
-                <AvatarFallback>
-        {user?.username ? user.username.charAt(0).toUpperCase() : "?"}
-      </AvatarFallback>
-        </Avatar>
-            <div>
-              <p className="font-semibold text-sm">{user.username}</p>
-            </div>
-          </div>
-          
-          <Textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Share your thoughts about this book..."
-            className="min-h-[120px] resize-none"
-            disabled={isSubmitting}
-          />
-          
-          <div className="flex justify-end">
-            <Button 
-              type="submit" 
-              disabled={!content.trim() || isSubmitting}
-              className="flex items-center space-x-2"
-            >
-              <Send className="h-4 w-4" />
-              <span>{isSubmitting ? 'Posting...' : 'Post Review'}</span>
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-    </Card>
+    <div className="max-w-2xl mx-auto p-4 space-y-6">
+      {/* Review form */}
+      <ReviewForm bookId={bookId} />
+
+      {/* Review list */}
+      <div className="space-y-4">
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
+            <ReviewCard key={review._id} review={review} />
+          ))
+        ) : (
+          <p className="text-muted-foreground text-center">
+            No reviews yet. Be the first to add one!
+          </p>
+        )}
+      </div>
+    </div>
   );
-};
+}

@@ -1,6 +1,5 @@
 // src/pages/RegisterPage.jsx
 import { useState } from "react"
-import axios from "axios"
 import { useNavigate, Link } from "react-router-dom"
 import axiosInstance from "../Utils/axiosInstance"
 import { cn } from "../lib/utils"
@@ -8,14 +7,15 @@ import { Button } from "../components/ui/button"
 import { Input } from "../components/ui/input"
 import { Label } from "../components/ui/label"
 import { GalleryVerticalEnd } from "lucide-react"
-import api from '../Utils/Api'
 
 export function RegisterForm({ className, ...props }) {
   const [name, setName] = useState("")
+  const [username, setUsername] = useState("")  
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [role, setRole] = useState("author")
+  const [avatar, setAvatar] = useState(null)    
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
@@ -32,23 +32,30 @@ export function RegisterForm({ className, ...props }) {
     }
 
     try {
-      const res = await axios.post(`${api}/auth/register`, {
-        name,
-        email,
-        password,
-        role,
+      const formData = new FormData()
+      formData.append("name", name)
+      formData.append("username", username)
+      formData.append("email", email)
+      formData.append("password", password)
+      formData.append("role", role)
+      if (avatar) formData.append("avatar", avatar)
+
+      const res = await axiosInstance.post(`/auth/register`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
 
+      localStorage.setItem("token", res.data.token)
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          name: res.data.name,
+          username: res.data.username,
+          role: res.data.role,
+          email: res.data.email,
+          avatar: res.data.avatar || null,
+        })
+      )
 
-      localStorage.setItem("token",res.data.token);
-      localStorage.setItem("user", JSON.stringify(
-        {
-        name:res.data.username,
-        role:res.data.role,
-        email:res.data.email
-      }
-      ));
-    
       if (res.data.role === "author") {
         navigate("/author-dashboard")
       } else if (res.data.role === "reviewer") {
@@ -92,11 +99,23 @@ export function RegisterForm({ className, ...props }) {
         </div>
 
         <div className="grid gap-3">
+          <Label htmlFor="username">Username</Label>
+          <Input
+            id="username"
+            type="text"
+            placeholder="johndoe"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
-            placeholder="m@example.com"
+            placeholder="joedoe@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -138,6 +157,18 @@ export function RegisterForm({ className, ...props }) {
           </select>
         </div>
 
+        <div className="grid gap-3">
+          <Label htmlFor="avatar">
+            Profile Picture <span className="text-xs text-gray-500">(jpeg, jpg, png)</span>
+          </Label>
+          <Input
+            id="avatar"
+            type="file"
+            accept="image/png, image/jpeg, image/jpg"
+            onChange={(e) => setAvatar(e.target.files[0])}
+          />
+        </div>
+
         <Button type="submit" className="w-full" disabled={loading}>
           {loading ? "Signing up..." : "Sign Up"}
         </Button>
@@ -156,7 +187,6 @@ export function RegisterForm({ className, ...props }) {
 export default function SignUp() {
   return (
     <div className="grid min-h-screen lg:grid-cols-2">
-
       <div className="bg-muted relative hidden lg:block">
         <img
           src="https://s3.amazonaws.com/shecodesio-production/uploads/files/000/172/784/original/Pile_de_livres_automne.jpeg?1756202167"
@@ -165,8 +195,6 @@ export default function SignUp() {
         />
       </div>
 
-   
-   
       <div className="flex flex-col gap-4 p-6 md:p-10 m-3">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="/" className="flex items-center gap-2 font-medium">
@@ -183,8 +211,6 @@ export default function SignUp() {
           </div>
         </div>
       </div>
-
-     
     </div>
   )
 }

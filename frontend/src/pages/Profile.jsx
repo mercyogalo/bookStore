@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent, CardTitle } from "../components/ui/card";
-import { Avatar } from "../components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "../components/ui/avatar";
 import { Skeleton } from "../components/ui/skeleton";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "../hooks/use-toast";
-import { Navbar } from '../components/Navbar';
+import { Navbar } from "../components/Navbar";
 import axiosInstance from "../Utils/axiosInstance";
+import api from "../Utils/Api";
 
 export const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -14,19 +15,17 @@ export const Profile = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-
-  const fetchProfile = async () => {
-  try {
-    const response = await axiosInstance.get("/auth/profile");
-    setProfile(response.data);
-    console.log(profile);
-  } catch (error) {
-    toast({ title: "Failed to fetch profile", status: "error" });
-    navigate("/");
-  } finally {
-    setLoading(false);
-  }
-};
+    const fetchProfile = async () => {
+      try {
+        const response = await axiosInstance.get(`/auth/profile`);
+        setProfile(response.data);
+      } catch (error) {
+        toast({ title: "Failed to fetch profile", status: "error" });
+        navigate("/");
+      } finally {
+        setLoading(false);
+      }
+    };
 
     fetchProfile();
   }, [navigate, toast]);
@@ -52,11 +51,15 @@ export const Profile = () => {
       <div className="flex justify-center items-center flex-1">
         <Card className="w-full max-w-lg p-6 text-center">
           <div className="flex justify-center mb-6">
-            <Avatar
-              src={profile.avatar || "https://via.placeholder.com/150"}
-              alt={profile.name}
-              className="h-32 w-32 rounded-full border-4 border-blue-500"
-            />
+            <Avatar className="h-32 w-32 rounded-full border-4 border-blue-500">
+              <AvatarImage
+                src={profile.avatar ? `${api}${profile.avatar}` : undefined}
+                alt={profile.name}
+              />
+              <AvatarFallback>
+                {profile.name ? profile.name.charAt(0).toUpperCase() : "?"}
+              </AvatarFallback>
+            </Avatar>
           </div>
 
           <CardHeader>
@@ -69,7 +72,7 @@ export const Profile = () => {
             <p>
               <span className="font-medium">Name:</span> {profile.name}
             </p>
-             <p>
+            <p>
               <span className="font-medium">Username:</span> {profile.username}
             </p>
             <p>
@@ -82,7 +85,6 @@ export const Profile = () => {
         </Card>
       </div>
 
-      {/* Footer */}
       <Footer />
     </div>
   );

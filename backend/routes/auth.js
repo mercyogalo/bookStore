@@ -18,8 +18,8 @@ router.post("/register", upload.single("avatar"), async (req, res) => {
       return res.status(400).json({ message: "This user already exists" });
     }
 
-    // Save avatar in /api/uploads
-    const avatar = req.file ? `/api/uploads/${req.file.filename}` : null;
+  
+    const avatar = req.file ? `/uploads/${req.file.filename}` : null;
 
     const user = await User.create({ 
       name, 
@@ -32,6 +32,7 @@ router.post("/register", upload.single("avatar"), async (req, res) => {
 
     res.status(201).json({
       userID: user._id,
+      name:user.name,
       username: user.username,
       email: user.email,
       role: user.role,
@@ -62,7 +63,8 @@ router.post("/login", async (req, res) => {
 
     res.status(200).json({
       userID: user._id,
-      username: user.name,
+      name:user.name,
+      username: user.username,
       email: user.email,
       role: user.role,
       avatar:user.avatar,
@@ -79,7 +81,8 @@ router.get("/profile", protect, async (req, res) => {
   try {
     res.status(200).json({
       userID: req.user._id,
-      username: req.user.name,
+      username: req.user.username,
+      name:req.user.name,
       email: req.user.email,
       role: req.user.role,
       avatar:req.user.avatar,

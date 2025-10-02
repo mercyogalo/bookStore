@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
     }
   } catch (err) {
     console.error("Failed to parse saved user:", err);
-    localStorage.removeItem("user"); // cleanup broken data
+    localStorage.removeItem("user");
   }
   setLoading(false);
 }, []);
@@ -26,6 +26,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     if (token) {
       localStorage.setItem("token", token);
+      console.log(token);
     }
   };
 
@@ -34,6 +35,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     if (token) {
       localStorage.setItem("token", token);
+       console.log(token);
     }
   };
 

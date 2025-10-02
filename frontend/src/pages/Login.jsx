@@ -29,7 +29,7 @@ export function LoginForm({ className, ...props }) {
       })
 
       localStorage.setItem("token", res.data.token);
-      console.log(res.data);
+      console.log(res.data.token);
       localStorage.setItem("user",JSON.stringify({
         name:res.data.username,
         role:res.data.role,

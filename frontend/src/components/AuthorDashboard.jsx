@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../Utils/axiosInstance";
 import { Navbar } from "./Navbar";
 import { useToast } from "../hooks/use-toast";
+import api from '../Utils/Api';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -151,17 +152,19 @@ export const AuthorDashboard = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="upload" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+      <Tabs defaultValue="upload" className="w-full mb-3">
+        <TabsList className="grid w-full grid-cols-2 mt-2 mb-2">
           <TabsTrigger value="upload">Upload Book</TabsTrigger>
           <TabsTrigger value="manage">Manage Books</TabsTrigger>
         </TabsList>
 
         {/* Upload Tab */}
         <TabsContent value="upload">
-          <Card className="w-full md:w-3/4 lg:w-3/4 mx-auto">
+          <Card className="w-full md:w-3/4 lg:w-3/4 mx-auto mt-2">
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4 mt-3">
+
+                  <label className="block text-sm font-medium mb-1">Author name</label>
                 <Input
                   placeholder="Author Name"
                   value={bookForm.author}
@@ -170,6 +173,8 @@ export const AuthorDashboard = () => {
                   }
                   required
                 />
+
+                 <label className="block text-sm font-medium mb-1">Book title</label>
                 <Input
                   placeholder="Book Title"
                   value={bookForm.title}
@@ -178,6 +183,8 @@ export const AuthorDashboard = () => {
                   }
                   required
                 />
+
+                 <label className="block text-sm font-medium mb-1">Genre</label>
                 <Input
                   placeholder="Genre"
                   value={bookForm.genre}
@@ -186,6 +193,7 @@ export const AuthorDashboard = () => {
                   }
                   required
                 />
+                 <label className="block text-sm font-medium mb-1">Cover Image</label>
                 <Input
                   type="file"
                   accept="image/*"
@@ -194,6 +202,8 @@ export const AuthorDashboard = () => {
                   }
                   required
                 />
+
+                 <label className="block text-sm font-medium mb-1">Year of publication</label>
                 <Input
                   placeholder="Year Published"
                   value={bookForm.yearPublished}
@@ -201,6 +211,8 @@ export const AuthorDashboard = () => {
                     setBookForm((p) => ({ ...p, yearPublished: e.target.value }))
                   }
                 />
+
+                 <label className="block text-sm font-medium mb-1">Book official Link</label>
                 <Input
                   type="url"
                   placeholder="Book Link"
@@ -209,6 +221,8 @@ export const AuthorDashboard = () => {
                     setBookForm((p) => ({ ...p, link: e.target.value }))
                   }
                 />
+
+                 <label className="block text-sm font-medium mb-1">Brief description of the book</label>
                 <Textarea
                   placeholder="Description"
                   value={bookForm.description}
@@ -217,6 +231,8 @@ export const AuthorDashboard = () => {
                   }
                   required
                 />
+
+                 <label className="block text-sm font-medium mb-1">Highlighted chapters</label>
                 <Textarea
                   placeholder="Sample Chapters"
                   value={bookForm.chapters}
@@ -244,7 +260,7 @@ export const AuthorDashboard = () => {
                     {/* Book Cover */}
                     <div className="w-32 h-44 flex-shrink-0">
                       <img
-                        src={book.coverImage || ""}
+                        src={`${api}${book.coverImage}` || ""}
                         alt={book.title}
                         className="w-full h-full object-cover rounded-md"
                       />

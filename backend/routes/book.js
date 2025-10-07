@@ -29,7 +29,7 @@ router.post(
         yearPublished,
         link,
         description,
-        coverImage: req.file ? `/api/uploads/${req.file.filename}` : null,
+        coverImage: req.file ? `/uploads/${req.file.filename}` : null,
         genre,
         chapters,
         createdBy: req.user._id,
@@ -247,7 +247,7 @@ router.put(
       }
 
       if (req.file) {
-        req.body.coverImage = `/api/uploads/${req.file.filename}`;
+        req.body.coverImage = `/uploads/${req.file.filename}`;
       }
 
       Object.assign(book, req.body);

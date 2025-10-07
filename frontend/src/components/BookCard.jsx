@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/badge';
 import { LikeButton } from './LikeButton';
 import { FavoriteButton } from './FavoriteButton';
 import { Link } from 'react-router-dom';
+import api from '../Utils/Api';
 
 export function BookCard({ book }) {
   const [isLiked, setIsLiked] = useState(book.isLiked || false);
@@ -16,7 +17,7 @@ export function BookCard({ book }) {
       <div className="aspect-[3/4] relative overflow-hidden">
         <img
           src={
-            book.coverImage ||
+            `${api}${book.coverImage}`  ||
             'https://images.pexels.com/photos/1130980/pexels-photo-1130980.jpeg'
           }
           alt={book.title}

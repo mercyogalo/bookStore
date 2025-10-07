@@ -83,7 +83,7 @@ export const BookPage = () => {
             {/* Book Image */}
             <div>
               <img
-                src={book.coverImage}
+                src={`${api}${book.coverImage}` }
                 alt={book.title}
                 className="w-full h-100 object-cover rounded-lg shadow"
               />
@@ -109,7 +109,7 @@ export const BookPage = () => {
         {/* Review Form */}
         <ReviewForm onSubmit={handleSubmitReview} />
 
-        {/* Review List */}
+      
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <ReviewCard

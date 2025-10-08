@@ -31,15 +31,6 @@ export function BookCard({ book }) {
               View
             </Button>
           </Link>
-          <LikeButton
-            bookId={book._id}
-            isLiked={isLiked}
-            onToggle={setIsLiked}
-          />
-         <FavoriteButton 
-         bookId={book._id} 
-         isFavorited={book.isFavorited || false}
-          />
 
         </div>
       </div>
@@ -72,9 +63,19 @@ export function BookCard({ book }) {
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center space-x-3">
+            
             <div className="flex items-center space-x-1">
-              <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-              <span>{book.rating || '4.5'}</span>
+               <LikeButton
+            bookId={book._id}
+            isLiked={isLiked}
+            onClick={setIsLiked}
+          />
+
+          <FavoriteButton 
+         bookId={book._id} 
+         isFavorited={book.isFavorited || false}
+          />
+      
             </div>
             <div className="flex items-center space-x-1">
               <MessageCircle className="h-3 w-3" />

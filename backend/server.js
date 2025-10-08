@@ -38,7 +38,7 @@ app.use('/api/book', bookRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
-// Connect to MongoDB
+
 mongoose
   .connect(process.env.MONGO_URI, {})
   .then(() => console.log("MongoDB running"))
@@ -46,17 +46,18 @@ mongoose
 
 const Review = require("./models/Review");
 
+
 // Socket.IO for real-time reviews
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
 
-  // Join book room
+  
   socket.on("joinBook", (bookId) => {
     socket.join(bookId);
     console.log(`User ${socket.id} joined book ${bookId}`);
   });
 
-  // Add new review
+ 
   socket.on("newReview", async (data) => {
     const { bookId, review } = data;
     try {
@@ -77,13 +78,14 @@ io.on("connection", (socket) => {
     }
   });
 
-  // Delete review
+  
   socket.on("deleteReview", async (data) => {
     const { bookId, reviewId, userId } = data;
     try {
       const review = await Review.findById(reviewId);
       if (!review) throw new Error("Review not found");
 
+     
       // Only allow the owner to delete
       if (review.userId.toString() !== userId) {
         return socket.emit("reviewError", { message: "You can only delete your own review" });
@@ -101,6 +103,8 @@ io.on("connection", (socket) => {
     console.log("User disconnected:", socket.id);
   });
 });
+
+
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

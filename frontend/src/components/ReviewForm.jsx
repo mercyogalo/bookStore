@@ -4,12 +4,13 @@ import socket from "../Utils/socket";
 import axiosInstance from "../Utils/axiosInstance";
 import { ReviewCard } from "../components/ReviewCard";
 
-export default function BookDetail() {
+export default function ReviewForm() {
   const { id: bookId } = useParams(); // URL param for book ID
   const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    // 1. Fetch initial reviews from REST
+   
+
     const fetchReviews = async () => {
       try {
         const res = await axiosInstance.get(`/reviews/${bookId}`);
@@ -20,20 +21,20 @@ export default function BookDetail() {
     };
     fetchReviews();
 
-    // 2. Join book socket room
+   
     socket.emit("joinBook", bookId);
 
-    // 3. Listen for new reviews
+    
     socket.on("receiveReview", (newReview) => {
       setReviews((prev) => [newReview, ...prev]);
     });
 
-    // 4. Listen for deleted reviews
+    
     socket.on("reviewDeleted", ({ reviewId }) => {
       setReviews((prev) => prev.filter((r) => r._id !== reviewId));
     });
 
-    // Cleanup when leaving the page
+   
     return () => {
       socket.off("receiveReview");
       socket.off("reviewDeleted");
@@ -42,10 +43,10 @@ export default function BookDetail() {
 
   return (
     <div className="max-w-2xl mx-auto p-4 space-y-6">
-      {/* Review form */}
+    
       <ReviewForm bookId={bookId} />
 
-      {/* Review list */}
+     
       <div className="space-y-4">
         {reviews.length > 0 ? (
           reviews.map((review) => (

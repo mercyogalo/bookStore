@@ -4,30 +4,10 @@ const Book=require("./Books");
 
 
 const favoriteSchema=new mongoose.Schema({
-    User:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"User",
-        required:true
-    },
-    book:{
-        type:mongoose.Schema.Types.ObjectId,
-        ref:"Book",
-        required:true
-    },
-    createdAt:{
-        type:Date,
-        default:Date.now
-    }
-})
+    User:{type:mongoose.Schema.Types.ObjectId, ref:"User", required:true },
+    book:{ type:mongoose.Schema.Types.ObjectId, ref:"Book", required:true},
+    }, {timestamps:true});
 
-favoriteSchema.index(
-    {
-        user:1,
-        book:1
-    },
-    {
-        unique:true
-    }
-)
+favoriteSchema.index({ user:1, book:1 },{ unique:true });
 
-const Favorite=("Favorite", favoriteSchema)
+module.exports=mongoose.model("Favorite", favoriteSchema);

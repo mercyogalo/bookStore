@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./User");
+const Like=require("./Likes");
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -52,11 +53,7 @@ const bookSchema = new mongoose.Schema({
     ref: "User",
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+}, {timestamps:true});
 
 
 bookSchema.pre("save", function (next) {

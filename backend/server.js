@@ -9,6 +9,8 @@ const path=require("path");
 const authRoutes = require("./routes/auth");
 const bookRoutes = require("./routes/book");
 const reviewRoutes = require("./routes/review"); 
+const favoriteRoutes=require("./routes/favorite");
+const likeRoutes=require("./routes/like");
 
 dotenv.config();
 
@@ -36,6 +38,8 @@ const PORT = process.env.PORT || 5000;
 app.use('/api/auth', authRoutes);
 app.use('/api/book', bookRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/book/lk', likeRoutes);
+app.use('/api/book/fv', favoriteRoutes);
 app.use("/api/uploads", express.static(path.join(__dirname, "uploads")));
 
 
@@ -47,7 +51,7 @@ mongoose
 const Review = require("./models/Review");
 
 
-// Socket.IO for real-time reviews
+
 io.on("connection", (socket) => {
   console.log("User connected", socket.id);
 
@@ -86,7 +90,6 @@ io.on("connection", (socket) => {
       if (!review) throw new Error("Review not found");
 
      
-      // Only allow the owner to delete
       if (review.userId.toString() !== userId) {
         return socket.emit("reviewError", { message: "You can only delete your own review" });
       }

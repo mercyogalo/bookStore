@@ -33,7 +33,8 @@ export function LoginForm({ className, ...props }) {
       localStorage.setItem("user",JSON.stringify({
         name:res.data.username,
         role:res.data.role,
-        email:res.data.email
+        email:res.data.email,
+        id:res.data.userID
       }));
 
       if (res.data.role === "author") {

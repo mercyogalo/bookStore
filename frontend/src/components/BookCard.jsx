@@ -8,9 +8,11 @@ import { FavoriteButton } from './FavoriteButton';
 import { Link } from 'react-router-dom';
 import api from '../Utils/Api';
 
+
 export function BookCard({ book }) {
   const [isLiked, setIsLiked] = useState(book.isLiked || false);
   const [isFavorited, setIsFavorited] = useState(book.isFavorited || false);
+
 
   return (
     <Card className="group overflow-hidden hover:shadow-lg transition-shadow duration-300 ">
@@ -60,7 +62,7 @@ export function BookCard({ book }) {
         <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
           {book.description}
         </p>
-
+      
         <div className="flex items-center justify-between text-xs text-muted-foreground">
           <div className="flex items-center space-x-3">
             

@@ -3,24 +3,42 @@ import { Bookmark } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { cn } from '../lib/utils';
 import axiosInstance from '../Utils/axiosInstance';
+import { useAuth } from '../context/AuthContext'; 
+import { useToast } from "../hooks/use-toast";
 
 export const FavoriteButton = ({ bookId, isFavorited = false }) => {
   const [favorited, setFavorited] = useState(isFavorited);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { user } = useAuth();
+  const { toast } = useToast();
 
   const handleFavorite = async () => {
+
     setIsAnimating(true);
     const newFavoritedState = !favorited;
     setFavorited(newFavoritedState);
 
     try {
       if (newFavoritedState) {
-        await axiosInstance.post(`/book/favorite/${bookId}`);
+        const res = await axiosInstance.post(`/book/fv/favorite/${bookId}`, { userId: user.id });
+        toast({
+          description: res.data?.message || "Book added to your favorites.",
+        });
       } else {
-        await axiosInstance.delete(`/book/unfavorite/${bookId}`);
+        const res = await axiosInstance.delete(`/book/fv/unfavorite/${bookId}`, { data: { userId: user.id },  });
+        toast({
+          description: res.data?.message || "Book removed from your favorites.",
+          variant: "destructive",
+        });
       }
     } catch (error) {
-      console.error("Error updating favorite:", error);
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong, please try again.";
+      toast({
+        description: message,
+        variant: "destructive",
+      });
       setFavorited(!newFavoritedState);
     }
 
@@ -34,7 +52,9 @@ export const FavoriteButton = ({ bookId, isFavorited = false }) => {
       onClick={handleFavorite}
       className={cn(
         "flex items-center space-x-1 transition-all duration-200",
-        favorited && "text-blue-500 hover:text-blue-600",
+        favorited
+          ? "text-blue-500 hover:text-blue-600"
+          : "text-gray-500 hover:text-gray-600",
         isAnimating && "scale-110"
       )}
     >

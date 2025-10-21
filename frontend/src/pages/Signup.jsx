@@ -52,6 +52,7 @@ export function RegisterForm({ className, ...props }) {
           username: res.data.username,
           role: res.data.role,
           email: res.data.email,
+          id:res.data.userID,
           avatar: res.data.avatar || null,
         })
       )

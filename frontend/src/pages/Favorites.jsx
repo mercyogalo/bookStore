@@ -13,10 +13,9 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
 
 
  
-  // Fetch favorites from backend
   const fetchFavorites = async () => {
     try {
-      const response = await axiosInstance.get(`/book/favorites`);
+      const response = await axiosInstance.get(`/book/fv/favorites`);
       setFavorites(response.data);
       console.log(response.data);
       setFilteredFavorites(response.data);
@@ -68,7 +67,7 @@ export const Favorites = ({ onBookClick, onLike, onFavorite }) => {
           onBookClick={onBookClick}
           onLike={onLike}
           onFavorite={onFavorite}
-          onDelete={deleteFavorite} // Pass delete functionality
+          onDelete={deleteFavorite} 
         />
       )}
     </div>

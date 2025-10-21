@@ -91,9 +91,7 @@ router.get("/featured", protect, async (req, res) => {
   }
 });
 
-// =========================
-// NEW ARRIVALS
-// =========================
+
 router.get("/newArrivals", protect, async (req, res) => {
   try {
     const books = await Book.find().sort({ createdAt: -1 }).limit(8);
@@ -116,97 +114,8 @@ router.get("/trending", protect, async (req, res) => {
 });
 
 
-router.post("/favorite/:bookId", protect, async (req, res) => {
-  try {
-    const favorite = await Favorite.create({
-      user: req.user._id,
-      book: req.params.bookId,
-    });
-    res.status(200).json({ message: "Successfully favorited this book" });
-  } catch (error) {
-    if (error.code === 11000) {
-      return res.status(400).json({ message: "Book already in favorites" });
-    }
-    console.error(error);
-    res.status(500).json({ message: "Server error kindly try again" });
-  }
-});
-
-router.get("/favorites", protect, async (req, res) => {
-  try {
-    const favorites = await Favorite.find({ user: req.user._id }).populate("book");
-    res.status(200).json(favorites);
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error kindly try again" });
-  }
-});
-
-router.delete("/unfavorite/:bookId", protect, async (req, res) => {
-  try {
-    await Favorite.findOneAndDelete({
-      user: req.user._id,
-      book: req.params.bookId,
-    });
-    res.status(200).json({ message: "Book removed from favorites successfully" });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error kindly try again" });
-  }
-});
 
 
-
-router.post("/:id/like", protect, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: "Invalid book ID" });
-    }
-
-    const book = await Book.findById(req.params.id);
-    if (!book) return res.status(404).json({ message: "Book not found" });
-
-    const userId = req.user._id;
-    const alreadyLiked = book.likes.includes(userId);
-
-    if (alreadyLiked) {
-      book.likes.pull(userId);
-    } else {
-      book.likes.push(userId);
-    }
-
-    book.likeCount = book.likes.length;
-    await book.save();
-
-    res.json({ message: alreadyLiked ? "Unliked" : "Liked", book });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-
-router.get("/:id/likes", protect, async (req, res) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).json({ message: "Invalid book ID" });
-    }
-
-    const book = await Book.findById(req.params.id).select("likes likeCount");
-    if (!book) return res.status(404).json({ message: "Book not found" });
-
-    const hasLiked = book.likes.includes(req.user._id);
-
-    res.json({ likeCount: book.likeCount, hasLiked });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-// =========================
-// GET BOOK BY ID
-// =========================
 router.get("/:id", protect, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {

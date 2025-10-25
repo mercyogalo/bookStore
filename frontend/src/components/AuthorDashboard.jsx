@@ -25,7 +25,7 @@ import {
 
 export const AuthorDashboard = () => {
   const [isUploading, setIsUploading] = useState(false);
-  const [deletingId, setDeletingId] = useState(null); // track book being deleted
+  const [deletingId, setDeletingId] = useState(null); 
   const [books, setBooks] = useState([]);
   const [bookForm, setBookForm] = useState({
     title: "",

@@ -118,9 +118,9 @@ export default function Login() {
         />
       </div>
 
-      {/* Left: Form (centered full height) */}
+    
       <div className="flex flex-col justify-center items-center bg-background relative m-3">
-        {/* Logo (desktop only, top-left corner) */}
+       
         <div className="absolute top-6 left-6 hidden lg:flex items-center gap-2 font-medium">
           <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
@@ -128,7 +128,7 @@ export default function Login() {
           My Project
         </div>
 
-        {/* Centered form */}
+     
         <LoginForm />
       </div>
 

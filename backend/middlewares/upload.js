@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const ext = path.extname(file.originalname);
-    const uniqueName = `${Date.now()}${ext}`; // only timestamp + extension
+    const uniqueName = `${Date.now()}${ext}`; 
     cb(null, uniqueName);
   },
 });
@@ -33,7 +33,7 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({
   storage,
-  limits: { fileSize: 2 * 1024 * 1024 }, // 2 MB
+  limits: { fileSize: 2 * 1024 * 1024 }, 
   fileFilter,
 });
 

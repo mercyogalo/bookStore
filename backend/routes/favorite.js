@@ -41,7 +41,8 @@ router.post("/favorite/:bookId", protect, async (req, res) => {
 router.get("/favorites", protect, async (req, res) => {
   try {
     const favorites = await Favorite.find({ user: req.user._id }).populate("book");
-    res.status(200).json(favorites);
+    const favoriteBooks=favorites.map((fav)=>fav.book);
+    res.status(200).json(favoriteBooks);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error kindly try again" });

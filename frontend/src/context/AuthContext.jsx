@@ -35,7 +35,6 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("user", JSON.stringify(userData));
     if (token) {
       localStorage.setItem("token", token);
-       console.log(token);
     }
   };
 

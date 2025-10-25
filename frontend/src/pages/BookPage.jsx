@@ -13,10 +13,10 @@ export const BookPage = () => {
   const [book, setBook] = useState(null);
   const [reviewCount, setReviewCount] = useState(0);
 
-  // Fetch book + reviews
+  
   useEffect(() => {
     const fetchData = async () => {
-      const Res = await axiosInstance.get(`/book/${bookId}`);
+      const Res = await axiosInstance.get(`/book/getBook/${bookId}`);
       const bookData = Res.data;
       setBook(bookData);
 
@@ -80,7 +80,7 @@ export const BookPage = () => {
       {book && (
         <Card className="mb-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6">
-            {/* Book Image */}
+          
             <div>
               <img
                 src={`${api}${book.coverImage}` }
@@ -102,11 +102,11 @@ export const BookPage = () => {
         </Card>
       )}
 
-      {/* Reviews Section */}
+      
       <div className="mt-10">
         <h2 className="text-2xl font-semibold mb-4">Reviews</h2>
 
-        {/* Review Form */}
+      
         <ReviewForm onSubmit={handleSubmitReview} />
 
       

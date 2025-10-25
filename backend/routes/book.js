@@ -116,7 +116,7 @@ router.get("/trending", protect, async (req, res) => {
 
 
 
-router.get("/:id", protect, async (req, res) => {
+router.get("/getBook/:id", protect, async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ message: "Invalid book ID" });

@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const Book = require("../models/Books");
 const Like = require("../models/Likes");
 const protect = require("../middlewares/auth");
+const checkRole = require("../middlewares/role");
 
 const router = express.Router();
 
@@ -61,7 +62,7 @@ router.get("/getLikes/:id", protect, async (req, res) => {
 });
 
 
-router.get("/getLikes/:id/users", protect, async (req, res) => {
+router.get("/getLikes/:id/users",checkRole(["author"]), protect, async (req, res) => {
   try {
     const bookId = req.params.id;
 

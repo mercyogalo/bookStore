@@ -1,62 +1,66 @@
 import { useState } from 'react';
-import { Heart } from 'lucide-react';
+import { Bookmark } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { cn } from '../lib/utils';
 import axiosInstance from '../Utils/axiosInstance';
+import { useAuth } from '../context/AuthContext'; 
 import { useToast } from "../hooks/use-toast";
 
-export function LikeButton({ bookId, initialCount = 0, isLiked: initialLiked = false }) {
-  const [count, setCount] = useState(initialCount);
-  const [isLiked, setIsLiked] = useState(initialLiked);
+export const FavoriteButton = ({ bookId, isFavorited = false }) => {
+  const [favorited, setFavorited] = useState(isFavorited);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { user } = useAuth();
   const { toast } = useToast();
 
-  const handleLike = async (e) => {
-    e.preventDefault();
+  const handleFavorite = async () => {
+
+    setIsAnimating(true);
+    const newFavoritedState = !favorited;
+    setFavorited(newFavoritedState);
 
     try {
-      const res = await axiosInstance.post(`/book/lk/likeBook/${bookId}/like`);
-      const newLikedState = res.data.liked;
-
-      setIsLiked(newLikedState);
-      setCount(prev => newLikedState ? prev + 1 : prev - 1);
-
-      if (newLikedState) {
-        e.stopPropagation();
-        setIsAnimating(true);
-        toast({
-          description: res.data?.message || "Liked",
-        });
+      if (newFavoritedState) {
+        const res = await axiosInstance.post(`/book/fv/favorite/${bookId}`, { userId: user.id });
       } else {
-        setTimeout(() => setIsAnimating(false), 200);
-        toast({
-          description: res.data?.message || "Unliked",
-          variant: "destructive",
-        });
+        const res = await axiosInstance.delete(`/book/fv/unfavorite/${bookId}`, { data: { userId: user.id },  });
       }
-
     } catch (error) {
+      const message =
+        error.response?.data?.message ||
+        "Something went wrong, please try again.";
       toast({
-        description: error.response?.data?.message || "Something went wrong",
+        description: message,
         variant: "destructive",
       });
+      setFavorited(!newFavoritedState);
     }
+
+    setTimeout(() => setIsAnimating(false), 300);
   };
 
   return (
     <Button
       variant="ghost"
       size="sm"
-      onClick={handleLike}
-      className="flex items-center space-x-1 px-2 py-1 h-auto"
+      onClick={handleFavorite}
+      className={cn(
+        "flex items-center space-x-1 transition-all duration-200",
+        favorited
+          ? "text-blue-500 hover:text-blue-600"
+          : "text-gray-500 hover:text-gray-600",
+        isAnimating && "scale-110"
+      )}
     >
-      <Heart 
-        className={`h-3 w-3 transition-all duration-200 ${
-          isLiked 
-            ? 'fill-red-500 text-red-500' 
-            : 'text-muted-foreground hover:text-red-500'
-        } ${isAnimating ? 'scale-125' : 'scale-100'}`}
+      <Bookmark
+        className={cn(
+          "h-4 w-4 transition-all duration-200",
+          favorited && "fill-current",
+          isAnimating && "animate-pulse"
+        )}
       />
-      <span className="text-xs">{count}</span>
+      <span className="text-sm font-medium">
+        {favorited ? 'Saved' : 'Favorite'}
+      </span>
     </Button>
   );
-}
+};

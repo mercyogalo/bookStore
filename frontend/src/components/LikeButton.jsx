@@ -1,26 +1,55 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import axiosInstance from '../Utils/axiosInstance';
+import { useToast } from "../hooks/use-toast";
 
-export function LikeButton({ bookId, initialCount = 0, isLiked: initialLiked = false, onToggle }) {
+export function LikeButton({ bookId, initialCount = 0, isLiked: initialLiked = false }) {
   const [count, setCount] = useState(initialCount);
   const [isLiked, setIsLiked] = useState(initialLiked);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { toast } = useToast();
 
-  const handleLike = (e) => {
+  useEffect(() => {
+    const fetchLikes = async () => {
+      try {
+        const res = await axiosInstance.get(`/book/lk/getLikes/${bookId}`);
+        setCount(res.data.likeCount);
+        setIsLiked(res.data.hasLiked);
+      } catch (error) {
+        toast({
+          description: error.response?.data?.message || "Something went wrong getting the likes",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchLikes();
+  }, [bookId]);
+
+  const handleLike = async (e) => {
     e.preventDefault();
-    e.stopPropagation();
-    
-    setIsAnimating(true);
-    const newLikedState = !isLiked;
-    setIsLiked(newLikedState);
-    setCount(prev => newLikedState ? prev + 1 : prev - 1);
-    
-    if (onToggle) {
-      onToggle(newLikedState);
-    }
 
-    setTimeout(() => setIsAnimating(false), 200);
+    try {
+      const res = await axiosInstance.post(`/book/lk/likeBook/${bookId}/like`);
+      const newLikedState = res.data.liked;
+
+      setIsLiked(newLikedState);
+      setCount(prev => newLikedState ? prev + 1 : prev - 1);
+
+      if (newLikedState) {
+        e.stopPropagation();
+        setIsAnimating(true);
+      } else {
+        setTimeout(() => setIsAnimating(false), 200);
+      }
+
+    } catch (error) {
+      toast({
+        description: error.response?.data?.message || "Something went wrong",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

@@ -62,9 +62,7 @@ export function BookCard({ book }) {
         <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
           {book.description}
         </p>
-         <p className="text-xs text-muted-foreground line-clamp-2 mb-3">
-          {book._id}
-        </p>
+        
         
       
         <div className="flex items-center justify-between text-xs text-muted-foreground">

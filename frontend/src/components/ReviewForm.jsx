@@ -1,63 +1,53 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import socket from "../Utils/socket";
-import axiosInstance from "../Utils/axiosInstance";
-import { ReviewCard } from "../components/ReviewCard";
+import { useState } from "react";
 
-export default function ReviewForm() {
-  const { id: bookId } = useParams(); // URL param for book ID
-  const [reviews, setReviews] = useState([]);
+// Simple review form component used by pages like `BookPage`.
+// Props:
+// - onSubmit(content, rating): callback when user submits a review
+export default function ReviewForm({ onSubmit }) {
+  const [content, setContent] = useState("");
+  const [rating, setRating] = useState(5);
 
-  useEffect(() => {
-   
-
-    const fetchReviews = async () => {
-      try {
-        const res = await axiosInstance.get(`/reviews/${bookId}`);
-        setReviews(res.data || []);
-      } catch (err) {
-        console.error("Failed to load reviews", err);
-      }
-    };
-    fetchReviews();
-
-   
-    socket.emit("joinBook", bookId);
-
-    
-    socket.on("receiveReview", (newReview) => {
-      setReviews((prev) => [newReview, ...prev]);
-    });
-
-    
-    socket.on("reviewDeleted", ({ reviewId }) => {
-      setReviews((prev) => prev.filter((r) => r._id !== reviewId));
-    });
-
-   
-    return () => {
-      socket.off("receiveReview");
-      socket.off("reviewDeleted");
-    };
-  }, [bookId]);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!content.trim()) return;
+    onSubmit && onSubmit(content.trim(), rating);
+    setContent("");
+    setRating(5);
+  };
 
   return (
-    <div className="max-w-2xl mx-auto p-4 space-y-6">
-    
-      <ReviewForm bookId={bookId} />
+    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto p-4 space-y-4">
+      <label className="block">
+        <span className="text-sm font-medium">Your review</span>
+        <textarea
+          className="mt-2 w-full rounded-md border p-2"
+          rows={4}
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="Write your review..."
+        />
+      </label>
 
-     
-      <div className="space-y-4">
-        {reviews.length > 0 ? (
-          reviews.map((review) => (
-            <ReviewCard key={review._id} review={review} />
-          ))
-        ) : (
-          <p className="text-muted-foreground text-center">
-            No reviews yet. Be the first to add one!
-          </p>
-        )}
+      <label className="flex items-center space-x-3">
+        <span className="text-sm">Rating</span>
+        <select
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+          className="rounded-md border p-1"
+        >
+          <option value={5}>5</option>
+          <option value={4}>4</option>
+          <option value={3}>3</option>
+          <option value={2}>2</option>
+          <option value={1}>1</option>
+        </select>
+      </label>
+
+      <div className="flex justify-end">
+        <button type="submit" className="px-4 py-2 rounded bg-primary text-white">
+          Submit Review
+        </button>
       </div>
-    </div>
+    </form>
   );
 }

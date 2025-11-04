@@ -194,4 +194,13 @@ router.delete("/deleteBook/:id", protect, checkRole(["author"]), async (req, res
   }
 });
 
+router.get("/analytics", async (req,res)=>{
+      try {
+        
+      } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error try again" });
+      }
+});
+
 module.exports = router;

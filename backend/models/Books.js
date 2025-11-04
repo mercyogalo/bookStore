@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const User = require("./User");
 const Like=require("./Likes");
+const Favorite=require("./Favorite");
+const Review=require("./Review");
 
 const bookSchema = new mongoose.Schema({
   title: {
@@ -38,27 +40,34 @@ const bookSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
-  ],
-  likeCount: {
-    type: Number,
-    default: 0
-  },
   createdBy: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
     required: true
   },
-}, {timestamps:true});
+}, {timestamps:true, toJSON:{virtuals: true}, toOBJECT:{virtuals:true}});
 
-
-bookSchema.pre("save", function (next) {
-  this.likeCount = this.likes.length;
-  next();
+bookSchema.virtual("likes",{
+    ref:"Like",
+    localField:"_id",
+    foreignField:"book",
 });
+
+
+bookSchema.virtual("favorites",{
+   ref:"Favorite",
+    localField:"_id",
+    foreignField:"book",
+});
+
+
+bookSchema.virtual("reviews",{
+   ref:"Review",
+    localField:"_id",
+    foreignField:"book",
+});
+
+
+
 
 module.exports = mongoose.model("Book", bookSchema);
